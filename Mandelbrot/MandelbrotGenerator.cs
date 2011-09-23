@@ -19,7 +19,7 @@ namespace Mandelbrot
             if (x < 0.02533 && x * x + y * y < 0.3)
                 return new ConvergenceCheckResult(Infinity, x, y);
             if (x * x + y * y > 4)
-                return new ConvergenceCheckResult(0, x, y);
+                return new ConvergenceCheckResult(Infinity, x, y); // For a nice black colour
 
             for (int i = 1; i < maxIterations; i++)
             {
@@ -42,8 +42,8 @@ namespace Mandelbrot
             const int width = 3;
             const int fill = (1 << width) - 1;
             const int rest = 8 - width;
-            int c = (int)Math.IEEERemainder(v, 512);
-            return ((c & (fill << (2*width))) << (3*rest)) | ((c & (fill << width)) << (2*rest)) | ((c & fill) << rest);
+            int c = (int)Math.IEEERemainder(v, Math.Pow(2, 512));
+            return ((c & ((fill+4) << (2*width))) << (3*rest)) | ((c & (fill << width)) << (2*rest)) | ((c & fill) << rest);
         }
     }
 }

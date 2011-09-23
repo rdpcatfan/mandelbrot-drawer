@@ -124,7 +124,7 @@
             this.maxIterationsTextBox.Name = "maxIterationsTextBox";
             this.maxIterationsTextBox.Size = new System.Drawing.Size(100, 20);
             this.maxIterationsTextBox.TabIndex = 9;
-            this.maxIterationsTextBox.Text = "100";
+            this.maxIterationsTextBox.Text = "500";
             // 
             // maxIterationsLabel
             // 
