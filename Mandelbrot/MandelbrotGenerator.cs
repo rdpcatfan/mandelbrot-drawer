@@ -10,16 +10,16 @@ namespace Mandelbrot
 {
     class MandelbrotGenerator : FractalGenerator
     {
-        protected override int checkConvergence(int maxIterations, double x, double y)
+        protected override ConvergenceCheckResult checkConvergence(int maxIterations, double x, double y)
         {
             int iterationCount = 0;
             double a = x;
             double b = y;
             double tempA; // Declared here for possible efficiency reasons
-            if (x > 2 || y > 2 || a * a + b * b > 4)
-                return 0;
             if (x < 0.02533 && x * x + y * y < 0.3)
-                return Infinity;
+                return new ConvergenceCheckResult(Infinity, x, y);
+            if (x * x + y * y > 4)
+                return new ConvergenceCheckResult(0, x, y);
 
             for (int i = 1; i < maxIterations; i++)
             {
@@ -28,17 +28,22 @@ namespace Mandelbrot
                 a = tempA;
                 iterationCount++;
                 if (a * a + b * b > 4)
-                    return iterationCount;
+                    return new ConvergenceCheckResult(iterationCount, a, b);
             }
 
-            return Infinity;
+            return new ConvergenceCheckResult(Infinity, a, b);
         }
 
-        protected override Int32 getColour(int iterationCount, int maxIterations)
+        protected override Int32 getColour(ConvergenceCheckResult res)
         {
-            if (iterationCount == Infinity)
-                return 0;
-            return (int)Math.Round(iterationCount * 255.0 / maxIterations) << 16;
+            if (res.iterations == Infinity)
+                return 0; // black
+            double v = res.iterations - Math.Log(Math.Log(Math.Sqrt(res.x * res.x + res.y * res.y)) / Math.Log(Math.Pow(10, 100)), 2);
+            const int width = 3;
+            const int fill = (1 << width) - 1;
+            const int rest = 8 - width;
+            int c = (int)Math.IEEERemainder(v, 512);
+            return ((c & (fill << (2*width))) << (3*rest)) | ((c & (fill << width)) << (2*rest)) | ((c & fill) << rest);
         }
     }
 }

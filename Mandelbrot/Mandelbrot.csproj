@@ -47,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConvergenceCheckResult.cs" />
     <Compile Include="DoubleBox.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -59,6 +60,7 @@
     <Compile Include="FractalGenerator.cs" />
     <Compile Include="IFractalGenerator.cs" />
     <Compile Include="MandelbrotGenerator.cs" />
+    <Compile Include="PartInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="MainWindow.resx">
