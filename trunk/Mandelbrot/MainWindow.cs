@@ -54,7 +54,7 @@ namespace Mandelbrot
         {
             double scale = this.scaleTextBox.Double;
             centreXTextBox.Double += (e.X - 250) * scale;
-            centreYTextBox.Double += (e.Y - 250) * scale;
+            centreYTextBox.Double -= (e.Y - 250) * scale;
             this.generateFractal();
         }
 
