@@ -7,15 +7,15 @@ namespace Mandelbrot
 {
     struct ConvergenceCheckResult
     {
-        public int iterations;
-        public double x;
-        public double y;
+        public int iCount;
+        public double rxPoint;
+        public double ryPoint;
 
-        public ConvergenceCheckResult(int it, double x, double y)
+        public ConvergenceCheckResult(int iCount, double rxPoint, double ryPoint)
         {
-            this.iterations = it;
-            this.x = x;
-            this.y = y;
+            this.iCount = iCount;
+            this.rxPoint = rxPoint;
+            this.ryPoint = ryPoint;
         }
     }
 }
