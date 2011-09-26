@@ -7,25 +7,25 @@ namespace Mandelbrot
 {
     struct PartInfo
     {
-        public IntPtr pToTopLeft;
-        public int partHeight;
-        public int partWidth;
-        public int imageWidth;
-        public double startX;
-        public double startY;
+        public IntPtr imageData;
+        public int pyPartSize;
+        public int pxPartSize;
+        public int pxImageSize;
+        public double rxStart;
+        public double ryStart;
         public double scale;
-        public int maxIterations;
+        public int iMax;
 
-        public PartInfo(int imageWidth, double scale, int maxIterations)
+        public PartInfo(int pxImageSize, double rScale, int iMax)
         {
-            this.pToTopLeft = (IntPtr)0; // safe, will always be assigned to later
-            this.partHeight = -1;
-            this.partWidth = -1;
-            this.imageWidth = imageWidth;
-            this.startX = Double.NaN;
-            this.startY = Double.NaN;
-            this.scale = scale;
-            this.maxIterations = maxIterations;
+            this.imageData = (IntPtr)0; // safe, will always be assigned to later
+            this.pyPartSize = -1;
+            this.pxPartSize = -1;
+            this.pxImageSize = pxImageSize;
+            this.rxStart = Double.NaN;
+            this.ryStart = Double.NaN;
+            this.scale = rScale;
+            this.iMax = iMax;
         }
     }
 }

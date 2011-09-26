@@ -12,7 +12,7 @@ namespace Mandelbrot
 {
     public partial class MainWindow : Form
     {
-        #region membervars
+        #region member variables
 
         /* In order to split presentation and implementation, the logic for
          * general fractal generation has been moved to the FractalGenerator
@@ -74,11 +74,11 @@ namespace Mandelbrot
             // Also, the precision of timerLabel varies rather greatly, there
             // should be some way to nail it to two decimals, or something
             // around that.
-            DateTime elapsed = DateTime.Now - start;
+            TimeSpan elapsed = DateTime.Now - start;
             timerLabel.Text = elapsed.TotalMilliseconds.ToString();
         }
 
-        #region mouse functions
+        #region UI interaction functions
 
         /* Event to be triggered when the `Start' button is pressed.
          *
@@ -103,7 +103,7 @@ namespace Mandelbrot
             /* As accessing this.scaleTextBox.Double is a fairly expensive
              * operation, we'll save the value.
              */
-            double scale = this.scaleTextBox.Double;
+            double rScale = this.scaleTextBox.Double;
             /* The following two lines calculate the distance between the old
              * centre and the new centre on the screen, and then convert that
              * to the difference in the value.
@@ -115,8 +115,8 @@ namespace Mandelbrot
              * Also note the difference in the calculation of Y:  the rational
              * can be found in FractalGenerator.cs.
              */
-            centreXTextBox.Double += (e.X - 250) * scale;
-            centreYTextBox.Double -= (e.Y - 250) * scale;
+            centreXTextBox.Double += (e.X - 250) * rScale;
+            centreYTextBox.Double -= (e.Y - 250) * rScale;
             this.generateFractal();
         }
 
@@ -137,9 +137,9 @@ namespace Mandelbrot
         private void setImageZoom(object sender, MouseEventArgs e)
         {
             int zoom = e.Delta;  // Distance scrolled, in steps of 120.
-            if (zoom > 0)  // Scroll in, thus decrease the scale.
+            if (zoom > 0)  // Scroll in, thus decrease the rScale.
                 scaleTextBox.Double /= (1 + zoom / 120.0);
-            else  // Scroll out, thus increase the scale.
+            else  // Scroll out, thus increase the rScale.
                 scaleTextBox.Double *= (1 - zoom / 120.0);
             this.generateFractal();
         }
