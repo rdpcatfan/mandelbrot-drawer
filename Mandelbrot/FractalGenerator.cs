@@ -75,6 +75,9 @@ namespace Mandelbrot
 
 		// An even larger value that may be used for testing purposes.
         protected const int iInfinityPlusOne = 9002;
+        
+        //COMMENTS NEEDED
+        protected ColourPalette colourPalette;
 
 		// The x coordinate of the centre in the previously generated image.
 		// Used to allow the old image to be copied when possible.
@@ -125,6 +128,15 @@ namespace Mandelbrot
             this.rOldScale = Double.NaN;
             this.pxIgnoredBegin = this.pyIgnoredBegin = -1;
             this.pxIgnoredSize = this.pyIgnoredSize = 0;
+            this.colourPalette = new ColourPalette(Color.Blue, Color.Yellow);
+            /*List<Color> colourList = new List<Color>();
+            colourList.Add(Color.Red);
+            colourList.Add(Color.Yellow);
+            colourList.Add(Color.Green);
+            colourList.Add(Color.Cyan);
+            colourList.Add(Color.Blue);
+            colourList.Add(Color.Magenta);
+            this.colourPalette = new ColourPalette(colourList);*/
         }
 
         #endregion
@@ -234,8 +246,8 @@ namespace Mandelbrot
             while (p2Free != 0)
             {
                 PartInfo info = new PartInfo(pxSize, rScale, iMax);
-                if (pyCurrentPosition < this.pyIgnoredBegin && pyCurrentPosition >= (this.pyIgnoredBegin + this.pyIgnoredSize))
-                {   // If pyCurrentPosition is NOT in ignored area
+                //if (pyCurrentPosition < this.pyIgnoredBegin && pyCurrentPosition >= (this.pyIgnoredBegin + this.pyIgnoredSize))
+                //{   // If pyCurrentPosition is NOT in ignored area
                     info.pxPartSize = pxSize;
                     info.rxStart = rxCentre - (pxSize / 2) * rScale;
                     info.ryStart = ryCentre + (pySize / 2 - pyCurrentPosition) * rScale;
@@ -258,7 +270,7 @@ namespace Mandelbrot
                         info.pyPartSize = pySize - pyCurrentPosition;
                         pyCurrentPosition = pySize;
                     }
-                }
+                //}
                 parts.Add(info);
             }
             return parts;
