@@ -17,10 +17,15 @@ namespace Mandelbrot
             double rxTemp = rxPoint;
             double ryTemp = ryPoint;
             double tempA; // Declared here for possible efficiency reasons
-            if (rxPoint < 0.02533 && rxPoint * rxPoint + ryPoint * ryPoint < 0.3)
-                return new ConvergenceCheckResult(iInfinity, rxPoint, ryPoint);
+            {// To limit scope of p.
+                double q = (rxPoint - 0.25) * (rxPoint - 0.25) + ryPoint * ryPoint;
+                if (q * (q + rxPoint - 0.25) < 0.25 * ryPoint * ryPoint)
+                    return new ConvergenceCheckResult(iInfinity, rxPoint, ryPoint);
+                if (rxPoint * rxPoint + 2 * rxPoint + 1 + ryPoint * ryPoint < 0.0625)
+                    return new ConvergenceCheckResult(iInfinity, rxPoint, ryPoint);
+            }
             if (rxPoint * rxPoint + ryPoint * ryPoint > 4)
-                return new ConvergenceCheckResult(iInfinity, rxPoint, ryPoint); // For a nice black colour
+                return new ConvergenceCheckResult(0, rxPoint, ryPoint);
 
             for (int iCounter = 1; iCounter < iMax; iCounter++)
             {
@@ -39,24 +44,9 @@ namespace Mandelbrot
             if (res.iCount == iInfinity)
                 return 0; // black
 
-            double v = res.iCount - Math.Log(0.5 * Math.Log(res.rxPoint * res.rxPoint + res.ryPoint * res.ryPoint) / Math.Log(Math.Pow(10, 100)), 2);
-            int colourInt1 = (int)v % colourPalette.Count;
-            int colourInt2 = (colourInt1 + 1) % colourPalette.Count;
-            double colourFraction2 = v - colourInt1;
-            double colourFraction1 = 1 - colourFraction2;
-            byte r = (byte)(colourPalette[colourInt1].R * colourFraction1 + colourPalette[colourInt2].R * colourFraction2);
-            byte g = (byte)(colourPalette[colourInt1].G * colourFraction1 + colourPalette[colourInt2].G * colourFraction2);
-            byte b = (byte)(colourPalette[colourInt1].B * colourFraction1 + colourPalette[colourInt2].B * colourFraction2);
-            return (r << 16) + (g << 8) + b;
-
-            /*
-            double v = res.iCount - Math.Log(Math.Log(MandelbrotGenerator.ComplexAbs(res.rxPoint, res.ryPoint)) / Math.Log(1E100), 2);
-            const int width = 3;
-            const int fill = (1 << width) - 1;
-            const int rest = 8 - width;
-            int c = (int)Math.IEEERemainder(v, Math.Pow(2, 512));
-            return ((c & ((fill+4) << (2*width))) << (3*rest)) | ((c & (fill << width)) << (2*rest)) | ((c & fill) << rest);
-            */
+            double v = res.iCount - Math.Log(0.5 * Math.Log(res.rxPoint * res.rxPoint + res.ryPoint * res.ryPoint, 1E100), 2);
+            int colourInt1 = (int)v & 0x1FF;
+            return colourPalette[colourInt1];
         }
 
         #endregion
