@@ -6,47 +6,40 @@ using System.Drawing;
 
 namespace Mandelbrot
 {
-    class ColourPalette : List<Color>
+    class ColourPalette : List<Int32>
     {
-        public ColourPalette()
+
+        public ColourPalette(Color first, Color second, Color third, Color fourth)
         {
+            this.populate(first, second, 128);
+            this.populate(second, third, 128);
+            this.populate(third, fourth, 128);
+            this.populate(fourth, first, 128);
         }
 
-        public ColourPalette(Color startColor, Color endColor)
+        private void populate(Color startColor, Color endColor, int colourBands)
         {
             int r, g, b;
             int deltaR = endColor.R - startColor.R;
             int deltaG = endColor.G - startColor.G;
             int deltaB = endColor.B - startColor.B;
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < colourBands; i++)
             {
-                r = startColor.R + (int)((0.5 * Math.Cos(Math.PI * (1 + 2.0 * i / 100)) + 0.5) * deltaR);
-                g = startColor.G + (int)((0.5 * Math.Cos(Math.PI * (1 + 2.0 * i / 100)) + 0.5) * deltaG);
-                b = startColor.B + (int)((0.5 * Math.Cos(Math.PI * (1 + 2.0 * i / 100)) + 0.5) * deltaB);
-                this.Add(Color.FromArgb(r, g, b));
+                r = startColor.R + calcShade(i, colourBands, deltaR);
+                g = startColor.G + calcShade(i, colourBands, deltaG);
+                b = startColor.B + calcShade(i, colourBands, deltaB);
+                this.Add(ColourPalette.int32FromRGB(r, g, b));
             }
         }
 
-        public ColourPalette(List<Color> colorList)
+        private static int calcShade(int i, int colourBands, int deltaR)
         {
-            int r, g, b;
-            int loopIterations = 1000 / colorList.Count;
-            for (int a = 0; a < colorList.Count; a++)
-            {
-                Color currentColor = colorList[a % colorList.Count];
-                Color nextColor = colorList[(a + 1) % colorList.Count];
-                int deltaR = nextColor.R - currentColor.R;
-                int deltaG = nextColor.G - currentColor.G;
-                int deltaB = nextColor.B - currentColor.B;
+            return (int)(deltaR * (double)(i) / colourBands);
+        }
 
-                for (int i = 0; i < loopIterations; i++)
-                {
-                    r = currentColor.R + (int)((0.5 * Math.Cos(Math.PI * i / loopIterations) + 0.5) * deltaR);
-                    g = currentColor.G + (int)((0.5 * Math.Cos(Math.PI * i / loopIterations) + 0.5) * deltaG);
-                    b = currentColor.B + (int)((0.5 * Math.Cos(Math.PI * i / loopIterations) + 0.5) * deltaB);
-                    this.Add(Color.FromArgb(r, g, b));
-                }
-            }
+        private static Int32 int32FromRGB(int r, int g, int b)
+        {
+            return ((r & 0xFF) << 16) | ((g & 0xFF) << 8) | (b & 0xFF);
         }
     }
 }

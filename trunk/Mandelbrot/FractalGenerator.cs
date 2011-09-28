@@ -128,15 +128,9 @@ namespace Mandelbrot
             this.rOldScale = Double.NaN;
             this.pxIgnoredBegin = this.pyIgnoredBegin = -1;
             this.pxIgnoredSize = this.pyIgnoredSize = 0;
-            this.colourPalette = new ColourPalette(Color.Blue, Color.Yellow);
-            /*List<Color> colourList = new List<Color>();
-            colourList.Add(Color.Red);
-            colourList.Add(Color.Yellow);
-            colourList.Add(Color.Green);
-            colourList.Add(Color.Cyan);
-            colourList.Add(Color.Blue);
-            colourList.Add(Color.Magenta);
-            this.colourPalette = new ColourPalette(colourList);*/
+            //this.colourPalette = new ColourPalette(Color.Red, Color.FromArgb(0, 0xFF, 0), Color.Blue, Color.Black);
+            //this.colourPalette = new ColourPalette(Color.DeepSkyBlue, Color.GhostWhite, Color.Crimson, Color.ForestGreen);
+            this.colourPalette = new ColourPalette(Color.Violet, Color.Firebrick, Color.Chocolate, Color.Lime);
         }
 
         #endregion
@@ -182,6 +176,9 @@ namespace Mandelbrot
                 ImageLockMode.WriteOnly,
                 newImage.PixelFormat
             );
+
+            if (rxCentre + rScale == rxCentre) // Precision error
+                throw new Exception("Precision limit exceeded.");
 
             if (this.rOldScale == rScale)
             {
