@@ -82,25 +82,17 @@ namespace Mandelbrot
 
         private ImageInfo oldInfo;
 
-        // If a piece of the old image has been copied, the x value of the
-        // beginning of this piece in the new image is stored here.
-        // Otherwise, this is equal to -1.
-        private int pxIgnoredBegin;
+        /* If a piece of the old image has been copied, the value of the
+         * beginning of this piece in the new image is stored here and the
+         * size of the piece is stored here. Otherwise, this is equal to
+         * AbsentIgnoredArea.
+         */
+        private Rectangle ignoredArea;
 
-        // If a piece of the old image has been copied, the y value of the
-        // beginning of this piece in the new image is stored here.
-        // Otherwise, this is equal to -1.
-        private int pyIgnoredBegin;
+        // Constant for specifying a non-existant ignored area.
+        private static Rectangle AbsentIgnoredArea = new Rectangle(-1, -1, 0, 0);
 
-        // If a piece of the old image has been copied, the width of the
-        // piece is stored here.  Otherwise, this is equal to 0.
-        private int pxIgnoredSize;
-
-        // If a piece of the old image has been copied, the height of the
-        // piece is stored here.  Otherwise, this is equal to 0.
-        private int pyIgnoredSize;
-
-        // Stores the previous image.  Does not 
+        // Stores the previous image.
         private Bitmap oldImage;
         #endregion
 
@@ -113,9 +105,11 @@ namespace Mandelbrot
         public FractalGenerator()
         {
             this.oldInfo = new ImageInfo();
+            this.ignoredArea = new Rectangle(-1, -1, 0, 0);
             //this.colourPalette = new ColourPalette(Color.Red, Color.FromArgb(0, 0xFF, 0), Color.Blue, Color.Black);
             //this.colourPalette = new ColourPalette(Color.DeepSkyBlue, Color.GhostWhite, Color.Crimson, Color.ForestGreen);
-            this.colourPalette = new ColourPalette(Color.Violet, Color.Firebrick, Color.Chocolate, Color.Lime);
+            //this.colourPalette = new ColourPalette(Color.MidnightBlue, Color.ForestGreen, Color.Firebrick, Color.SandyBrown);
+            this.colourPalette = new ColourPalette(Color.White, Color.Red, Color.Green, Color.Blue);
         }
 
         #endregion
@@ -130,22 +124,14 @@ namespace Mandelbrot
          */
         protected abstract ConvergenceCheckResult checkConvergence(double rxPoint, double ryPoint, int maxIterations);
 
-        /* Given the coordinates of a point and the number of iterations
-         * necessary to reach it, return the colour that that pixel should
-         * be given.
-         *
-         * It might be reasonable to make this a static, non-virtual function
-         * and use a List for storing the colours instead. -- Anton
-         */
-        protected abstract Int32 getColour(ConvergenceCheckResult res);
 
         #endregion
 
         #region public functions
 
-        // Generate and return an image of size pxSize x pySize, centred on
-        // point (rxCentre, ryCentre), with the step size between each pixel
-        // being rScale.  Test for escape up to iMax iterations.
+        /* Generate and return an image that corresponds to the passed-in info.
+         * Test for escape up to iMax iterations.
+         */
         public Image generate(
             ImageInfo info,
             int iMax
@@ -162,16 +148,10 @@ namespace Mandelbrot
                 throw new Exception("Precision limit exceeded.");
 
             if (this.oldInfo.rScale == info.rScale)
-            {
-                int pxShift = (int)((info.rxCentre - this.oldInfo.rxCentre) / this.oldInfo.rScale);
-                int pyShift = (int)((this.oldInfo.ryCentre - info.ryCentre) / this.oldInfo.rScale);
-                this.moveImage(bmd, pxShift, pyShift);
-            }
+                this.moveImage(bmd, info.pOffset(this.oldInfo)); // This sets the ignored area.
             else
-            {
-                this.pxIgnoredBegin = this.pyIgnoredBegin = -1;
-                this.pxIgnoredSize = this.pyIgnoredSize = 0;
-            }
+                this.ignoredArea = new Rectangle(-1, -1, 0, 0);
+
             IList<PartInfo> parts = this.makePartsFromWhole(info, bmd.Scan0, iMax);
             Parallel.ForEach(parts, generatePart);
             newImage.UnlockBits(bmd);
@@ -187,32 +167,21 @@ namespace Mandelbrot
         /* Split the image surface into several parts, with each part
          * containing all the necessary information to render it. 
          *
-         * TODO:  Make this function respect xIgnoreBegin and co.
-         *
-         * WARNING:  This method is under (re-)construction!  Currently
-         * throws OutOfMemoryException.
-         * 
-         *
          * Parameters:
-         *   pxSize   - width of the image
-         *   pySize  - height of the image
-         *   rxCentre - x coordinate of the point in the centre of the image
-         *   ryCentre - y coordinate of the point in the centre of the image
-         *   rScale   - difference between coordinates of pixels
-         *   begin   - pointer to first pixel of image
-         *   iMax - Maximum number of iterations to try for
+         *   wholeImage - information about the entire image
+         *   begin      - pointer to first pixel of image
+         *   iMax       - maximum number of iterations to try for
          */
-        IList<PartInfo> makePartsFromWhole(ImageInfo info, IntPtr begin, int iMax)
+        IList<PartInfo> makePartsFromWhole(ImageInfo wholeImage, IntPtr begin, int iMax)
         {
             // List of parts that will be returned.
             List<PartInfo> parts = new List<PartInfo>();
-
-            parts.AddRange(makePartsFromSection(info.pxSize, info.pySize, info.rxCentre, info.ryCentre, info.rScale, begin, iMax));
-            
+            parts.AddRange(makePartsFromSection(wholeImage, new Rectangle(0, 0, wholeImage.pxCentre, wholeImage.pySize), begin, iMax));
+            parts.AddRange(makePartsFromSection(wholeImage, new Rectangle(wholeImage.pxCentre, 0, wholeImage.pxCentre, wholeImage.pySize), begin, iMax));
             return parts;
         }
 
-        private List<PartInfo> makePartsFromSection(int pxSize, int pySize, double rxCentre, double ryCentre, double rScale, IntPtr begin, int iMax)
+        private List<PartInfo> makePartsFromSection(ImageInfo wholeImage, Rectangle workArea, IntPtr begin, int iMax)
         {
             List<PartInfo> parts = new List<PartInfo>();
 
@@ -224,39 +193,40 @@ namespace Mandelbrot
             const int p2PreferredBlockSize = 50000;
 
             // Number of pixels that still need to be distributed.
-            int p2Free = pxSize * pySize;
+            int p2Free = workArea.Width * workArea.Height;
 
-            // Line up to which all pixels have been distributed.
+            // Line up to which all pixels have been distributed, starting from
+            // the area currently being partitioned.
             int pyCurrentPosition = 0;
             while (p2Free != 0)
             {
-                PartInfo info = new PartInfo(pxSize, rScale, iMax);
-                //if (pyCurrentPosition < this.pyIgnoredBegin && pyCurrentPosition >= (this.pyIgnoredBegin + this.pyIgnoredSize))
-                //{   // If pyCurrentPosition is NOT in ignored area
-                info.pxPartSize = pxSize;
-                info.rxStart = rxCentre - (pxSize / 2) * rScale;
-                info.ryStart = ryCentre + (pySize / 2 - pyCurrentPosition) * rScale;
+                PartInfo nextPart = new PartInfo(wholeImage.pxSize, wholeImage.rScale, iMax);
+                nextPart.pxPartSize = workArea.Width;
+                nextPart.rxStart = wholeImage.rxValue(workArea.X);
+                nextPart.ryStart = wholeImage.ryValue(workArea.Y + pyCurrentPosition);
                 unsafe
                 {
                     Int32* rawData = (Int32*)begin.ToPointer();
-                    rawData += pxSize * pyCurrentPosition;
-                    info.imageData = new IntPtr(rawData);
+                    rawData += wholeImage.pxSize * (workArea.Y + pyCurrentPosition) + workArea.X;
+                    nextPart.imageData = new IntPtr(rawData);
                 }
-                if (p2PreferredBlockSize < p2Free)
+                if (p2PreferredBlockSize < p2Free) // Lots of free space left
                 {
-                    int pyClaimed = p2PreferredBlockSize / pxSize;
-                    p2Free -= pyClaimed * pxSize;
+                    // Figure out how many lines make up p2PreferredBlockSize and 
+                    // grab that much, making sure to note that you took it.
+                    int pyClaimed = p2PreferredBlockSize / workArea.Width;
+                    p2Free -= pyClaimed * workArea.Width;
                     pyCurrentPosition += pyClaimed;
-                    info.pyPartSize = pyClaimed;
+                    nextPart.pyPartSize = pyClaimed;
                 }
-                else
+                else // Little free space left
                 {
+                    // Just take it all.
                     p2Free = 0;
-                    info.pyPartSize = pySize - pyCurrentPosition;
-                    pyCurrentPosition = pySize;
+                    nextPart.pyPartSize = workArea.Height - pyCurrentPosition;
+                    pyCurrentPosition = wholeImage.pySize; // Just in case the algorithm changes later.
                 }
-                //}
-                parts.Add(info);
+                parts.Add(nextPart);
             }
             return parts;
         }
@@ -283,18 +253,16 @@ namespace Mandelbrot
             }
         }
 
-        // Move the existing image pxShift to the right and pyShift up.
-        //
-        // Note:  rewriting this to be pxShift to the right and pyShift down
-        // would make it easier.
-        private void moveImage(BitmapData newImageData, int xShift, int yShift)
+        // Move the existing image by pShift pixels.
+        private void moveImage(BitmapData newImageData, Size pShift)
         {
-            int pxNewSize = oldImage.Width - Math.Abs(xShift);
-            int pyNewSize = oldImage.Height - Math.Abs(yShift);
-            int pxSourceBegin = xShift < 0 ? 0 : xShift;
-            int pxDestBegin = xShift < 0 ? -xShift : 0;
-            int pySourceBegin = yShift < 0 ? 0 : yShift;
-            int pyDestBegin = yShift > 0 ? 0 : -yShift;
+            int pxNewSize = oldImage.Width - Math.Abs(pShift.Width);
+            int pyNewSize = oldImage.Height - Math.Abs(pShift.Height);
+            // The following few lines are generic code that should be split out.
+            int pxSourceBegin = pShift.Width < 0 ? 0 : pShift.Width;
+            int pxDestBegin = pShift.Width < 0 ? -pShift.Width : 0;
+            int pySourceBegin = pShift.Height < 0 ? 0 : pShift.Height;
+            int pyDestBegin = pShift.Height > 0 ? 0 : -pShift.Height;
             int pxOldSize = this.oldImage.Width;
             int pyOldSize = this.oldImage.Height;
 
@@ -304,7 +272,7 @@ namespace Mandelbrot
                 oldImage.PixelFormat
             );
 
-            int toSkip = pxOldSize - pxNewSize;
+            int pxToSkip = pxOldSize - pxNewSize;
             
             unsafe {
                 Int32* src = (Int32*)oldImageData.Scan0.ToPointer();
@@ -316,11 +284,28 @@ namespace Mandelbrot
                     Int32* end = dest + pxNewSize;
                     while (dest < end)
                         *dest++ = *src++;
-                    src += toSkip;
-                    dest += toSkip;
+                    src += pxToSkip;
+                    dest += pxToSkip;
                 }
             }
             this.oldImage.UnlockBits(oldImageData);
+        }
+
+        /* Given the coordinates of a point and the number of iterations
+         * necessary to reach it, return the colour that that pixel should
+         * be given.
+         *
+         * It might be reasonable to make this a static, non-virtual function
+         * and use a List for storing the colours instead. -- Anton
+         */
+        protected Int32 getColour(ConvergenceCheckResult res)
+        {
+            if (res.iCount == iInfinity)
+                return 0; // black
+
+            double v = res.iCount - Math.Log(0.5 * Math.Log(res.rxPoint * res.rxPoint + res.ryPoint * res.ryPoint, 1E100), 2);
+            int colourInt1 = (int)v & 0x1FF;
+            return colourPalette[colourInt1];
         }
 
         #endregion
