@@ -38,16 +38,6 @@ namespace Mandelbrot
 
             return new ConvergenceCheckResult(iInfinity, rxTemp, ryTemp);
         }
-                
-        protected override Int32 getColour(ConvergenceCheckResult res)
-        {
-            if (res.iCount == iInfinity)
-                return 0; // black
-
-            double v = res.iCount - Math.Log(0.5 * Math.Log(res.rxPoint * res.rxPoint + res.ryPoint * res.ryPoint, 1E100), 2);
-            int colourInt1 = (int)v & 0x1FF;
-            return colourPalette[colourInt1];
-        }
 
         #endregion
 
