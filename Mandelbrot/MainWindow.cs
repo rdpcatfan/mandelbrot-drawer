@@ -30,6 +30,9 @@ namespace Mandelbrot
          */
         IFractalGenerator fractal;
 
+        const int pxImageSize = 500;
+        const int pyImageSize = 500;
+
         #endregion
 
         #region constructors
@@ -60,11 +63,11 @@ namespace Mandelbrot
         {
             DateTime start = DateTime.Now;  // Poor man's timer
             this.mandelImage.Image = fractal.generate(
-                500, // Image width, should be made a variable.
-                500, // Image height, should be made a variable.
+                new ImageInfo(pxImageSize,
+                pyImageSize,
                 this.centreXTextBox.Double,
                 this.centreYTextBox.Double,
-                this.scaleTextBox.Double,
+                this.scaleTextBox.Double),
                 Int32.Parse(maxIterationsTextBox.Text)
             );
             // Note that the timer has a resolution of around 15 ms -- this is
