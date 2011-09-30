@@ -76,7 +76,8 @@ namespace Mandelbrot
 		// An even larger value that may be used for testing purposes.
         protected const int iInfinityPlusOne = 9002;
         
-        //COMMENTS NEEDED
+        // Temporary variable for storing the Pallete.  Should probably be
+        // replaced, so that the pallete can be passed in as a parameter.
         protected ColourPalette colourPalette;
 
 		// The x coordinate of the centre in the previously generated image.
