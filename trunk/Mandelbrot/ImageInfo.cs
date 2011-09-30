@@ -19,6 +19,14 @@ namespace Mandelbrot
         public double ryCentre { get; private set; }
         public double rScale { get; private set; }
 
+        public ImageInfo()
+        {
+            this.pxSize = this.pySize = 0;
+            this.rxCentre = this.ryCentre = this.rScale = Double.NaN;
+            // NaN == x is false for all x, so the rScale always seems
+            // incorrect.
+        }
+
         public ImageInfo(int pxSize, int pySize, double rxCentre, double ryCentre, double rScale)
         {
             this.pxSize = pxSize;
