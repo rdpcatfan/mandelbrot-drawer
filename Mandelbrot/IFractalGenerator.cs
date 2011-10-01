@@ -10,6 +10,6 @@ namespace Mandelbrot
 {
     interface IFractalGenerator
     {
-        Image generate(ImageInfo info, int iMax);
+        Image generate(ImageInfo info);
     }
 }

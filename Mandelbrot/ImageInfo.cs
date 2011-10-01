@@ -7,19 +7,41 @@ using System.Diagnostics;
 
 namespace Mandelbrot
 {
-    /* Stores some information about an image in order to make it easier to
-     * pass to and from functions.
-     * 
-     * Immutable.
-     */
+    /// <summary>
+    /// Stores all information necessary to generate an image.
+    /// </summary>
+    /// <remarks>Instances of this class are immutable.</remarks>
     class ImageInfo
     {
         #region members
+        /// <summary>
+        /// Horizontal size of image in pixels.
+        /// </summary>
         public readonly int pxSize;
+        /// <summary>
+        /// Vertical size of image in pixels.
+        /// </summary>
         public readonly int pySize;
+        /// <summary>
+        /// X-coordinate of the point at the centre of the image, a real number.
+        /// </summary>
         public readonly double rxCentre;
+        /// <summary>
+        /// Y-coordinate of the point at the centre of the image, a real number.
+        /// </summary>
         public readonly double ryCentre;
+        /// <summary>
+        /// Difference in coordinates between two adjacent pixels.
+        /// </summary>
         public readonly double rScale;
+        /// <summary>
+        /// Maximum number of iterations to attempt to check for convergence.
+        /// </summary>
+        public readonly int iMax;
+        /// <summary>
+        /// Colour palette to construct the image from.
+        /// </summary>
+        public readonly ColourPalette palette;
         #endregion
 
         #region help properties
@@ -66,25 +88,28 @@ namespace Mandelbrot
 
         public ImageInfo()
         {
-            this.pxSize = this.pySize = 0;
+            this.pxSize = this.pySize = this.iMax = 0;
             this.rxCentre = this.ryCentre = this.rScale = Double.NaN;
             // NaN == x is false for all x, so the rScale always seems
             // incorrect.
+            this.palette = null; // Should never be used to generate anything, anyway.
         }
 
-        public ImageInfo(int pxSize, int pySize, double rxCentre, double ryCentre, double rScale)
+        public ImageInfo(int pxSize, int pySize, double rxCentre, double ryCentre, double rScale, int iMax, ColourPalette palette)
         {
             this.pxSize = pxSize;
             this.pySize = pySize;
             this.rxCentre = rxCentre;
             this.ryCentre = ryCentre;
             this.rScale = rScale;
+            this.iMax = iMax;
+            this.palette = palette;
             Debug.Assert(rScale > 0, "Scale invalid.");
         }
 
         // Convenience method for constructing from a Size.
-        public ImageInfo(Size pSize, double rxCentre, double ryCentre, double rScale) :
-            this(pSize.Width, pSize.Height, rxCentre, ryCentre, rScale)
+        public ImageInfo(Size pSize, double rxCentre, double ryCentre, double rScale, int iMax, ColourPalette palette) :
+            this(pSize.Width, pSize.Height, rxCentre, ryCentre, rScale, iMax, palette)
         {}
 
         public double rxValue(int pxPosition)
