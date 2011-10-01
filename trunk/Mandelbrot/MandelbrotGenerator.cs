@@ -41,13 +41,5 @@ namespace Mandelbrot
 
         #endregion
 
-        #region private functions
-
-        private static double ComplexAbs(double x, double y)
-        {
-            return Math.Sqrt(x * x + y * y);
-        }
-
-        #endregion
     }
 }

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Drawing.Imaging;
+using System.Threading;
 
 namespace Mandelbrot
 {
@@ -30,10 +31,12 @@ namespace Mandelbrot
          */
         IFractalGenerator fractal;
 
+        bool resizeBeginTriggered = false;
+
         #endregion
 
         #region constructors
-        
+
         /* Construct the window, generate and render the first instance of
          * the fractal with some sane defaults.
          */
@@ -59,8 +62,9 @@ namespace Mandelbrot
         private void generateFractal()
         {
             DateTime start = DateTime.Now;  // Poor man's timer
-            this.mandelImage.Image = fractal.generate(
-                new ImageInfo(this.mandelImage.Size,
+            this.mandelImageContainer.Image = fractal.generate(
+                new ImageInfo(this.mandelImageContainer.Width,
+                this.mandelImageContainer.Height,
                 this.centreXTextBox.Double,
                 this.centreYTextBox.Double,
                 this.scaleTextBox.Double),
@@ -73,8 +77,8 @@ namespace Mandelbrot
             // Also, the precision of timerLabel varies rather greatly, there
             // should be some way to nail it to two decimals, or something
             // around that.
-            TimeSpan elapsed = DateTime.Now - start;
-            timerLabel.Text = elapsed.TotalMilliseconds.ToString();
+            double elapsed = (DateTime.Now - start).TotalMilliseconds;
+            this.statusStripTimeLabel.Text = "Generated in: " + elapsed.ToString("#0.00") + " ms";
         }
 
         #region UI interaction functions
@@ -107,26 +111,21 @@ namespace Mandelbrot
              * centre and the new centre on the screen, and then convert that
              * to the difference in the value.
              *
-             * Note that two 250 constants should become variables at some
-             * point:  they are the width and height of the image divided by
-             * two.
-             *
-             * Also note the difference in the calculation of Y:  the rational
+             * Note the difference in the calculation of Y:  the rational
              * can be found in FractalGenerator.cs.
              */
-            centreXTextBox.Double += (e.X - 250) * rScale;
-            centreYTextBox.Double -= (e.Y - 250) * rScale;
+            centreXTextBox.Double += (e.X - mandelImageContainer.Size.Width / 2) * rScale;
+            centreYTextBox.Double -= (e.Y - mandelImageContainer.Size.Height / 2) * rScale;
             this.generateFractal();
         }
 
-        /* Ensures that the image always has focus if the mouse is above it
-         * (or was it `not above something else'?).  This is done so that
-         * the scroll functionality always works, as a control must have
-         * focus before it can respond to mouse wheel events.
+        /* Ensures that the image always has focus if the mouse is above it.
+         * This is done so that the scroll functionality always works, 
+         * as a control must have focus before it can respond to mouse wheel events.
          */
         private void setImageFocus(object sender, EventArgs e)
         {
-            this.mandelImage.Focus();
+            this.mandelImageContainer.Focus();
         }
 
         /* Modify the image maginification.  Used in response to the
@@ -140,6 +139,46 @@ namespace Mandelbrot
                 scaleTextBox.Double /= (1 + zoom / 120.0);
             else  // Scroll out, thus increase the rScale.
                 scaleTextBox.Double *= (1 - zoom / 120.0);
+            this.generateFractal();
+        }
+
+        /* setResizeFlag is fired in respons to the ResizeBegin event of the main form.
+         * ResizeBegin fires once when the border of the form is dragged. 
+         * It does not fire when the 'maximize' button of the form is clicked. 
+         */
+        private void setResizeFlag(object sender, EventArgs e)
+        {
+            resizeBeginTriggered = true;
+        }
+
+        /* tryResizeImageContainer is fired in respons to the Resize event of the main form.
+         * ResizeBegin fires zero or more times when the border of the form is dragged. 
+         * It fires once when the 'maximize' button of the form is clicked.
+         * tryResizeImageContainer updates the current size in the status strip and 
+         * resizes the image when the 'maximize' button is clicked.
+         */
+        private void tryResizeImageContainer(object sender, EventArgs e)
+        {
+            statusStripSizeLabel.Text = "Size: " + (this.ClientSize.Width - 40) + " x " + (this.ClientSize.Height - 120);
+            if (!resizeBeginTriggered)
+                setImageContainerSize();
+        }
+
+        /* Fires once when the resize of the form has ended if a ResizeBegin event has been raised.
+         * Resets the flag and resizes the image.
+         */
+        private void resizeImageContainer(object sender, EventArgs e)
+        {
+            resizeBeginTriggered = false;
+            setImageContainerSize();
+        }
+
+        /* Resizes the mandelImageContainer, while preserving the distance to the border of the form.
+         * Updates the image to adjust to the new size of the image container.
+         */
+        private void setImageContainerSize()
+        {
+            mandelImageContainer.Size = new Size(this.ClientSize.Width - 40, this.ClientSize.Height - 120);
             this.generateFractal();
         }
         #endregion

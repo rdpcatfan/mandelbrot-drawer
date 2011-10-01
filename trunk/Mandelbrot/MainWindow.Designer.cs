@@ -29,22 +29,25 @@
         private void InitializeComponent()
         {
             this.generateImageButton = new System.Windows.Forms.Button();
-            this.mandelImage = new System.Windows.Forms.PictureBox();
+            this.mandelImageContainer = new System.Windows.Forms.PictureBox();
             this.centreXLabel = new System.Windows.Forms.Label();
-            this.centreXTextBox = new Mandelbrot.DoubleBox();
-            this.centreYTextBox = new Mandelbrot.DoubleBox();
             this.centreYLabel = new System.Windows.Forms.Label();
-            this.scaleTextBox = new Mandelbrot.DoubleBox();
             this.scaleLabel = new System.Windows.Forms.Label();
             this.maxIterationsTextBox = new System.Windows.Forms.TextBox();
             this.maxIterationsLabel = new System.Windows.Forms.Label();
-            this.timerLabel = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.mandelImage)).BeginInit();
+            this.statusStrip = new System.Windows.Forms.StatusStrip();
+            this.statusStripSizeLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.statusStripTimeLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.scaleTextBox = new Mandelbrot.DoubleBox();
+            this.centreYTextBox = new Mandelbrot.DoubleBox();
+            this.centreXTextBox = new Mandelbrot.DoubleBox();
+            ((System.ComponentModel.ISupportInitialize)(this.mandelImageContainer)).BeginInit();
+            this.statusStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // generateImageButton
             // 
-            this.generateImageButton.Location = new System.Drawing.Point(516, 554);
+            this.generateImageButton.Location = new System.Drawing.Point(401, 49);
             this.generateImageButton.Name = "generateImageButton";
             this.generateImageButton.Size = new System.Drawing.Size(75, 23);
             this.generateImageButton.TabIndex = 0;
@@ -52,67 +55,41 @@
             this.generateImageButton.UseVisualStyleBackColor = true;
             this.generateImageButton.Click += new System.EventHandler(this.generateMandelbrotClick);
             // 
-            // mandelImage
+            // mandelImageContainer
             // 
-            this.mandelImage.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.mandelImage.Location = new System.Drawing.Point(10, 77);
-            this.mandelImage.Name = "mandelImage";
-            this.mandelImage.Size = new System.Drawing.Size(500, 500);
-            this.mandelImage.TabIndex = 1;
-            this.mandelImage.TabStop = false;
-            this.mandelImage.MouseClick += new System.Windows.Forms.MouseEventHandler(this.setImageCentre);
-            this.mandelImage.MouseEnter += new System.EventHandler(this.setImageFocus);
-            this.mandelImage.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.setImageZoom);
+            this.mandelImageContainer.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.mandelImageContainer.Location = new System.Drawing.Point(20, 80);
+            this.mandelImageContainer.Name = "mandelImageContainer";
+            this.mandelImageContainer.Size = new System.Drawing.Size(500, 500);
+            this.mandelImageContainer.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.mandelImageContainer.TabIndex = 1;
+            this.mandelImageContainer.TabStop = false;
+            this.mandelImageContainer.MouseClick += new System.Windows.Forms.MouseEventHandler(this.setImageCentre);
+            this.mandelImageContainer.MouseEnter += new System.EventHandler(this.setImageFocus);
+            this.mandelImageContainer.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.setImageZoom);
             // 
             // centreXLabel
             // 
             this.centreXLabel.AutoSize = true;
-            this.centreXLabel.Location = new System.Drawing.Point(12, 19);
+            this.centreXLabel.Location = new System.Drawing.Point(21, 24);
             this.centreXLabel.Name = "centreXLabel";
             this.centreXLabel.Size = new System.Drawing.Size(54, 13);
             this.centreXLabel.TabIndex = 2;
             this.centreXLabel.Text = "midden X:";
             // 
-            // centreXTextBox
-            // 
-            this.centreXTextBox.Double = 0D;
-            this.centreXTextBox.Location = new System.Drawing.Point(72, 16);
-            this.centreXTextBox.Name = "centreXTextBox";
-            this.centreXTextBox.Size = new System.Drawing.Size(100, 20);
-            this.centreXTextBox.TabIndex = 3;
-            this.centreXTextBox.Text = "0.0";
-            // 
-            // centreYTextBox
-            // 
-            this.centreYTextBox.Double = 0D;
-            this.centreYTextBox.Location = new System.Drawing.Point(72, 47);
-            this.centreYTextBox.Name = "centreYTextBox";
-            this.centreYTextBox.Size = new System.Drawing.Size(100, 20);
-            this.centreYTextBox.TabIndex = 5;
-            this.centreYTextBox.Text = "0.0";
-            // 
             // centreYLabel
             // 
             this.centreYLabel.AutoSize = true;
-            this.centreYLabel.Location = new System.Drawing.Point(12, 50);
+            this.centreYLabel.Location = new System.Drawing.Point(21, 55);
             this.centreYLabel.Name = "centreYLabel";
             this.centreYLabel.Size = new System.Drawing.Size(54, 13);
             this.centreYLabel.TabIndex = 4;
             this.centreYLabel.Text = "midden Y:";
             // 
-            // scaleTextBox
-            // 
-            this.scaleTextBox.Double = 0.01D;
-            this.scaleTextBox.Location = new System.Drawing.Point(255, 16);
-            this.scaleTextBox.Name = "scaleTextBox";
-            this.scaleTextBox.Size = new System.Drawing.Size(100, 20);
-            this.scaleTextBox.TabIndex = 7;
-            this.scaleTextBox.Text = "0.01";
-            // 
             // scaleLabel
             // 
             this.scaleLabel.AutoSize = true;
-            this.scaleLabel.Location = new System.Drawing.Point(203, 19);
+            this.scaleLabel.Location = new System.Drawing.Point(212, 24);
             this.scaleLabel.Name = "scaleLabel";
             this.scaleLabel.Size = new System.Drawing.Size(41, 13);
             this.scaleLabel.TabIndex = 6;
@@ -120,7 +97,7 @@
             // 
             // maxIterationsTextBox
             // 
-            this.maxIterationsTextBox.Location = new System.Drawing.Point(255, 47);
+            this.maxIterationsTextBox.Location = new System.Drawing.Point(264, 52);
             this.maxIterationsTextBox.Name = "maxIterationsTextBox";
             this.maxIterationsTextBox.Size = new System.Drawing.Size(100, 20);
             this.maxIterationsTextBox.TabIndex = 9;
@@ -129,27 +106,76 @@
             // maxIterationsLabel
             // 
             this.maxIterationsLabel.AutoSize = true;
-            this.maxIterationsLabel.Location = new System.Drawing.Point(203, 50);
+            this.maxIterationsLabel.Location = new System.Drawing.Point(212, 55);
             this.maxIterationsLabel.Name = "maxIterationsLabel";
             this.maxIterationsLabel.Size = new System.Drawing.Size(46, 13);
             this.maxIterationsLabel.TabIndex = 8;
             this.maxIterationsLabel.Text = "iteraties:";
             // 
-            // timerLabel
+            // statusStrip
             // 
-            this.timerLabel.AutoSize = true;
-            this.timerLabel.Location = new System.Drawing.Point(372, 15);
-            this.timerLabel.Name = "timerLabel";
-            this.timerLabel.Size = new System.Drawing.Size(77, 13);
-            this.timerLabel.TabIndex = 10;
-            this.timerLabel.Text = "Timer info here";
+            this.statusStrip.AutoSize = false;
+            this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.statusStripSizeLabel,
+            this.statusStripTimeLabel});
+            this.statusStrip.Location = new System.Drawing.Point(0, 600);
+            this.statusStrip.Name = "statusStrip";
+            this.statusStrip.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.statusStrip.Size = new System.Drawing.Size(540, 20);
+            this.statusStrip.SizingGrip = false;
+            this.statusStrip.TabIndex = 11;
+            this.statusStrip.Text = "statusStrip";
+            // 
+            // statusStripSizeLabel
+            // 
+            this.statusStripSizeLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
+            this.statusStripSizeLabel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.statusStripSizeLabel.Name = "statusStripSizeLabel";
+            this.statusStripSizeLabel.Padding = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.statusStripSizeLabel.Size = new System.Drawing.Size(97, 15);
+            this.statusStripSizeLabel.Text = "Size:  500 x 500";
+            // 
+            // statusStripTimeLabel
+            // 
+            this.statusStripTimeLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
+            this.statusStripTimeLabel.Name = "statusStripTimeLabel";
+            this.statusStripTimeLabel.Padding = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.statusStripTimeLabel.Size = new System.Drawing.Size(110, 15);
+            this.statusStripTimeLabel.Text = "Generated in: ms";
+            // 
+            // scaleTextBox
+            // 
+            this.scaleTextBox.Double = 0.01D;
+            this.scaleTextBox.Location = new System.Drawing.Point(264, 21);
+            this.scaleTextBox.Name = "scaleTextBox";
+            this.scaleTextBox.Size = new System.Drawing.Size(100, 20);
+            this.scaleTextBox.TabIndex = 7;
+            this.scaleTextBox.Text = "0.01";
+            // 
+            // centreYTextBox
+            // 
+            this.centreYTextBox.Double = 0D;
+            this.centreYTextBox.Location = new System.Drawing.Point(81, 52);
+            this.centreYTextBox.Name = "centreYTextBox";
+            this.centreYTextBox.Size = new System.Drawing.Size(100, 20);
+            this.centreYTextBox.TabIndex = 5;
+            this.centreYTextBox.Text = "0.0";
+            // 
+            // centreXTextBox
+            // 
+            this.centreXTextBox.Double = 0D;
+            this.centreXTextBox.Location = new System.Drawing.Point(81, 21);
+            this.centreXTextBox.Name = "centreXTextBox";
+            this.centreXTextBox.Size = new System.Drawing.Size(100, 20);
+            this.centreXTextBox.TabIndex = 3;
+            this.centreXTextBox.Text = "0.0";
             // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(721, 589);
-            this.Controls.Add(this.timerLabel);
+            this.ClientSize = new System.Drawing.Size(540, 620);
+            this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.maxIterationsTextBox);
             this.Controls.Add(this.maxIterationsLabel);
             this.Controls.Add(this.scaleTextBox);
@@ -158,11 +184,18 @@
             this.Controls.Add(this.centreYLabel);
             this.Controls.Add(this.centreXTextBox);
             this.Controls.Add(this.centreXLabel);
-            this.Controls.Add(this.mandelImage);
+            this.Controls.Add(this.mandelImageContainer);
             this.Controls.Add(this.generateImageButton);
+            this.MinimumSize = new System.Drawing.Size(556, 658);
             this.Name = "MainWindow";
-            this.Text = "Form1";
-            ((System.ComponentModel.ISupportInitialize)(this.mandelImage)).EndInit();
+            this.Text = "Mandelbrot Generator";
+            //this.ResizeEnd += new System.EventHandler(this.setImageContainerSize);
+            this.ResizeBegin += new System.EventHandler(setResizeFlag);
+            this.Resize += new System.EventHandler(this.tryResizeImageContainer);
+            this.ResizeEnd += new System.EventHandler(resizeImageContainer);
+            ((System.ComponentModel.ISupportInitialize)(this.mandelImageContainer)).EndInit();
+            this.statusStrip.ResumeLayout(false);
+            this.statusStrip.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -171,16 +204,18 @@
         #endregion
 
         private System.Windows.Forms.Button generateImageButton;
-        private System.Windows.Forms.PictureBox mandelImage;
+        private System.Windows.Forms.PictureBox mandelImageContainer;
         private System.Windows.Forms.Label centreXLabel;
-        private DoubleBox centreXTextBox;
-        private DoubleBox centreYTextBox;
+        private Mandelbrot.DoubleBox centreXTextBox;
+        private Mandelbrot.DoubleBox centreYTextBox;
         private System.Windows.Forms.Label centreYLabel;
-        private DoubleBox scaleTextBox;
+        private Mandelbrot.DoubleBox scaleTextBox;
         private System.Windows.Forms.Label scaleLabel;
         private System.Windows.Forms.TextBox maxIterationsTextBox;
         private System.Windows.Forms.Label maxIterationsLabel;
-        private System.Windows.Forms.Label timerLabel;
+        private System.Windows.Forms.StatusStrip statusStrip;
+        private System.Windows.Forms.ToolStripStatusLabel statusStripTimeLabel;
+        private System.Windows.Forms.ToolStripStatusLabel statusStripSizeLabel;
 
     }
 }
