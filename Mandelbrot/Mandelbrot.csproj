@@ -53,6 +53,7 @@
     <Compile Include="DoubleBox.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="ImageCombination.cs" />
     <Compile Include="ImageInfo.cs" />
     <Compile Include="MainWindow.cs">
       <SubType>Form</SubType>
