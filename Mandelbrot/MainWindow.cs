@@ -15,33 +15,44 @@ namespace Mandelbrot
     {
         #region member variables
 
-        /* In order to split presentation and implementation, the logic for
-         * general fractal generation has been moved to the FractalGenerator
-         * abstract class and the logic for the Mandelbrot Set in particular
-         * has been moved to the MandelbrotGenerator class.
-         *
-         * Due to FractalGenerator providing a fairly specific implementation
-         * of how work is divided and pixels generated, it is likely that
-         * there will eventually be entirely different fractal generators. In
-         * order to allow for this, the the IFractalGenerator interface was
-         * introduced, which gives more implementation freedom than the
-         * abstract class;  this allows, amongst other things, the Buddhabrot
-         * to be generated, which the current FractalGenerator would not be
-         * capable of doing.
-         */
+        /// <summary>
+        /// In order to split presentation and implementation, the logic for
+        /// general fractal generation has been moved to the FractalGenerator
+        /// abstract class and the logic for the Mandelbrot Set in particular
+        /// has been moved to the MandelbrotGenerator class.
+        ///
+        /// Due to FractalGenerator providing a fairly specific implementation
+        /// of how work is divided and pixels generated, it is likely that
+        /// there will eventually be entirely different fractal generators. In
+        /// order to allow for this, the the IFractalGenerator interface was
+        /// introduced, which gives more implementation freedom than the
+        /// abstract class;  this allows, amongst other things, the Buddhabrot
+        /// to be generated, which the current FractalGenerator would not be
+        /// capable of doing.
+        /// </summary>
         IFractalGenerator fractal;
 
+        /// <summary>
+        /// Used for managing resize operations.
+        /// </summary>
         bool resizeBeginTriggered = false;
+
+        IDictionary<string, ColourPalette> colours;
 
         #endregion
 
         #region constructors
 
-        /* Construct the window, generate and render the first instance of
-         * the fractal with some sane defaults.
-         */
+        /// <summary>
+        /// Construct the window, generate and render the first instance of
+        /// the fractal with some sane defaults.
+        /// </summary>
         public MainWindow()
         {
+            this.colours = new Dictionary<string, ColourPalette>();
+            this.colours["Default"] = new ColourPalette(Color.White, Color.Red, Color.Green, Color.Blue);
+            this.colours["Forest"] = new ColourPalette(Color.MidnightBlue, Color.ForestGreen, Color.FloralWhite, Color.Gray);
+            this.colours["Awful"] = new ColourPalette(Color.Chocolate, Color.Lime, Color.PeachPuff, Color.Purple);
             InitializeComponent();
             /* Seeing as FractalGenerator is partially fractal-agnostic, it
              * would be nice if the Collatz Fractal or Julia Set could also
@@ -53,12 +64,14 @@ namespace Mandelbrot
 
         #endregion
 
-        /* Generate and render the fractal.
-         *
-         * Note:  At the moment, this also times the process and displays
-         * the time taken.  Whether this is good design is questionable,
-         * but it is not significant enough of an issue to redesign.
-         */
+        /// <summary>
+        /// Generate and render the fractal.
+        /// </summary>
+        /// <remarks>
+        /// At the moment, this also times the process and displays
+        /// the time taken.  Whether this is good design is questionable,
+        /// but it is not significant enough of an issue to redesign.
+        /// </remarks>
         private void generateFractal()
         {
             DateTime start = DateTime.Now;  // Poor man's timer
@@ -69,7 +82,7 @@ namespace Mandelbrot
                 this.centreYTextBox.Double,
                 this.scaleTextBox.Double,
                 Int32.Parse(maxIterationsTextBox.Text),
-                new ColourPalette(Color.White, Color.Red, Color.Green, Color.Blue))
+                this.colours["Default"])
             );
             // Note that the timer has a resolution of around 15 ms -- this is
             // good enough for testing, but it's probably best to get something
