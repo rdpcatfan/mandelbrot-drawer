@@ -81,16 +81,9 @@ namespace Mandelbrot
         protected ColourPalette colourPalette;
 
         private ImageInfo oldInfo;
-
-        /* If a piece of the old image has been copied, the value of the
-         * beginning of this piece in the new image is stored here and the
-         * size of the piece is stored here. Otherwise, this is equal to
-         * AbsentIgnoredArea.
-         */
-        private Rectangle ignoredArea;
-
+        
         // Constant for specifying a non-existant ignored area.
-        private static Rectangle AbsentIgnoredArea = new Rectangle(-1, -1, 0, 0);
+        private static readonly Rectangle AbsentIgnoredArea = new Rectangle(-1, -1, 0, 0);
 
         // Stores the previous image.
         private Bitmap oldImage;
@@ -105,7 +98,6 @@ namespace Mandelbrot
         public FractalGenerator()
         {
             this.oldInfo = new ImageInfo();
-            this.ignoredArea = new Rectangle(-1, -1, 0, 0);
             //this.colourPalette = new ColourPalette(Color.Red, Color.FromArgb(0, 0xFF, 0), Color.Blue, Color.Black);
             //this.colourPalette = new ColourPalette(Color.DeepSkyBlue, Color.GhostWhite, Color.Crimson, Color.ForestGreen);
             //this.colourPalette = new ColourPalette(Color.MidnightBlue, Color.ForestGreen, Color.Firebrick, Color.SandyBrown);
@@ -146,13 +138,18 @@ namespace Mandelbrot
 
             if (info.rxCentre + info.rScale == info.rxCentre) // Precision error
                 throw new Exception("Precision limit exceeded.");
-
+            
+            IList<PartInfo> parts;
             if (this.oldInfo.rScale == info.rScale)
-                this.moveImage(bmd, info.pOffset(this.oldInfo)); // This sets the ignored area.
+            {
+                ImageCombination combination = new ImageCombination(oldInfo, info); // Hm, I'd usually use var here.
+                this.moveImage(bmd, combination);
+                parts = this.makePartsFromWhole(info, combination.OverlapInSecond, bmd.Scan0, iMax);
+            }
             else
-                this.ignoredArea = new Rectangle(-1, -1, 0, 0);
-
-            IList<PartInfo> parts = this.makePartsFromWhole(info, bmd.Scan0, iMax);
+            {
+                parts = this.makePartsFromWhole(info, FractalGenerator.AbsentIgnoredArea, bmd.Scan0, iMax);
+            }
             Parallel.ForEach(parts, generatePart);
             newImage.UnlockBits(bmd);
             this.oldInfo = info;
@@ -172,7 +169,7 @@ namespace Mandelbrot
          *   begin      - pointer to first pixel of image
          *   iMax       - maximum number of iterations to try for
          */
-        IList<PartInfo> makePartsFromWhole(ImageInfo wholeImage, IntPtr begin, int iMax)
+        IList<PartInfo> makePartsFromWhole(ImageInfo wholeImage, Rectangle ignoredArea, IntPtr begin, int iMax)
         {
             // List of parts that will be returned.
             List<PartInfo> parts = new List<PartInfo>();
@@ -254,15 +251,8 @@ namespace Mandelbrot
         }
 
         // Move the existing image by pShift pixels.
-        private void moveImage(BitmapData newImageData, Size pShift)
+        private void moveImage(BitmapData newImageData, ImageCombination combination)
         {
-            int pxNewSize = oldImage.Width - Math.Abs(pShift.Width);
-            int pyNewSize = oldImage.Height - Math.Abs(pShift.Height);
-            // The following few lines are generic code that should be split out.
-            int pxSourceBegin = pShift.Width < 0 ? 0 : pShift.Width;
-            int pxDestBegin = pShift.Width < 0 ? -pShift.Width : 0;
-            int pySourceBegin = pShift.Height < 0 ? 0 : pShift.Height;
-            int pyDestBegin = pShift.Height > 0 ? 0 : -pShift.Height;
             int pxOldSize = this.oldImage.Width;
             int pyOldSize = this.oldImage.Height;
 
@@ -272,16 +262,16 @@ namespace Mandelbrot
                 oldImage.PixelFormat
             );
 
-            int pxToSkip = pxOldSize - pxNewSize;
+            int pxToSkip = pxOldSize - combination.pxSize;
             
             unsafe {
                 Int32* src = (Int32*)oldImageData.Scan0.ToPointer();
-                src += pxSourceBegin + pySourceBegin * pxOldSize;
+                src += combination.pxBeginInFirst + combination.pyBeginInFirst * pxOldSize;
                 Int32* dest = (Int32*)newImageData.Scan0.ToPointer();
-                dest += pxDestBegin + pyDestBegin * pxOldSize;
-                for (int pyCounter = 0; pyCounter < pyNewSize; ++pyCounter)
+                dest += combination.pxBeginInSecond + combination.pyBeginInSecond * pxOldSize;
+                for (int pyCounter = 0; pyCounter < combination.pySize; ++pyCounter)
                 {
-                    Int32* end = dest + pxNewSize;
+                    Int32* end = dest + combination.pxSize;
                     while (dest < end)
                         *dest++ = *src++;
                     src += pxToSkip;
