@@ -43,7 +43,7 @@ namespace Mandelbrot
          *    p - All values that refer to the image, and are therefore a
          *        count of pixels, should be prefixed with a p.
          *    r - All values that refer to the fractal, and are therefore
-         *        supposed to bereal numbers, should be prefixed with an r.
+         *        supposed to be real numbers, should be prefixed with an r.
          *    i - All values that refer to a number of iterations should
          *        be prefixed with an i.
          *
@@ -140,7 +140,8 @@ namespace Mandelbrot
                 throw new Exception("Precision limit exceeded.");
             
             IList<PartInfo> parts;
-            if (this.oldInfo.rScale == info.rScale)
+            
+            if (this.oldInfo.pCentre != info.pCentre && !this.oldInfo.pSize.IsEmpty)
             {
                 ImageCombination combination = new ImageCombination(oldInfo, info); // Hm, I'd usually use var here.
                 this.moveImage(bmd, combination);

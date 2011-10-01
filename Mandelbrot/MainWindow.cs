@@ -78,7 +78,7 @@ namespace Mandelbrot
             // should be some way to nail it to two decimals, or something
             // around that.
             double elapsed = (DateTime.Now - start).TotalMilliseconds;
-            this.statusStripTimeLabel.Text = "Generated in: " + elapsed.ToString("#0.00") + " ms";
+            this.statusStripTimeLabel.Text = "Gegenereerd in: " + elapsed.ToString("0") + " ms";
         }
 
         #region UI interaction functions
@@ -159,7 +159,7 @@ namespace Mandelbrot
          */
         private void tryResizeImageContainer(object sender, EventArgs e)
         {
-            statusStripSizeLabel.Text = "Size: " + (this.ClientSize.Width - 40) + " x " + (this.ClientSize.Height - 120);
+            statusStripSizeLabel.Text = "Afmetingen: " + (this.ClientSize.Width - 40) + " x " + (this.ClientSize.Height - 120);
             if (!resizeBeginTriggered)
                 setImageContainerSize();
         }
