@@ -67,8 +67,9 @@ namespace Mandelbrot
                 this.mandelImageContainer.Height,
                 this.centreXTextBox.Double,
                 this.centreYTextBox.Double,
-                this.scaleTextBox.Double),
-                Int32.Parse(maxIterationsTextBox.Text)
+                this.scaleTextBox.Double,
+                Int32.Parse(maxIterationsTextBox.Text),
+                new ColourPalette(Color.White, Color.Red, Color.Green, Color.Blue))
             );
             // Note that the timer has a resolution of around 15 ms -- this is
             // good enough for testing, but it's probably best to get something

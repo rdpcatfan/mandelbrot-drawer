@@ -15,8 +15,9 @@ namespace Mandelbrot
         public double ryStart;
         public double scale;
         public int iMax;
+        public ColourPalette palette;
 
-        public PartInfo(int pxImageSize, double rScale, int iMax)
+        public PartInfo(int pxImageSize, double rScale, int iMax, ColourPalette palette)
         {
             this.imageData = (IntPtr)0; // safe, will always be assigned to later
             this.pyPartSize = -1;
@@ -26,6 +27,7 @@ namespace Mandelbrot
             this.ryStart = Double.NaN;
             this.scale = rScale;
             this.iMax = iMax;
+            this.palette = palette;
         }
     }
 }

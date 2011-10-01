@@ -69,65 +69,69 @@ namespace Mandelbrot
          */
 
         #region member vars
-        // A suitably large value that should be returned when a point does
-        // not converge.
+        /// <summary>
+        /// A suitably large value that should be returned when a point does
+        /// not converge.
+        /// </summary>
         protected const int iInfinity = 9001;
 
-        // An even larger value that may be used for testing purposes.
+        /// <summary>
+        /// An even larger value that may be used for testing purposes.
+        /// </summary>
         protected const int iInfinityPlusOne = 9002;
-        
-        // Temporary variable for storing the Pallete.  Should probably be
-        // replaced, so that the pallete can be passed in as a parameter.
-        protected ColourPalette colourPalette;
 
+        ///<summary>
+        ///Information used to generate the previous image.
+        ///</summary>
         private ImageInfo oldInfo;
         
-        // Constant for specifying a non-existant ignored area.
+        /// <summary>
+        /// Constant for specifying a non-existant ignored area.
+        /// </summary>
         private static readonly Rectangle AbsentIgnoredArea = new Rectangle(0, 0, 0, 0);
 
-        // Stores the previous image.
-        private Bitmap oldImage;
+        /// <summary>
+        /// The last image fully generated.
+        /// </summary>
+        private Bitmap lastImage;
         #endregion
 
         #region constructors
 
-        /* Initialise the fractal generator.  Ensure that there's no way that
-         * it may seem like copying from the previous image would be a good
-         * idea (there is no previous image).
-         */
+        /// <summary>
+        /// Initialise the fractal generator.  Ensure that there's no way that
+        /// it may seem like copying from the previous image would be a good
+        /// idea (there is no previous image).
+        /// </summary>
         public FractalGenerator()
         {
             this.oldInfo = new ImageInfo();
-            //this.colourPalette = new ColourPalette(Color.Red, Color.FromArgb(0, 0xFF, 0), Color.Blue, Color.Black);
-            //this.colourPalette = new ColourPalette(Color.DeepSkyBlue, Color.GhostWhite, Color.Crimson, Color.ForestGreen);
-            //this.colourPalette = new ColourPalette(Color.MidnightBlue, Color.ForestGreen, Color.Firebrick, Color.SandyBrown);
-            this.colourPalette = new ColourPalette(Color.White, Color.Red, Color.Green, Color.Blue);
         }
-
         #endregion
 
         #region abstract functions
 
-        /* Check whether point (x, y) escapes in no more than iMax
-         * iterations.  Return the coordinates reached when it escapes, and
-         * the number of iteration taken to do so.  If the point does not
-         * escape, return iInfinity and the coordinates at the last iteration
-         * performed.
-         */
-        protected abstract ConvergenceCheckResult checkConvergence(double rxPoint, double ryPoint, int maxIterations);
-
+        /// <summary>
+        /// Check whether point (x, y) escapes in no more than iMax
+        /// iterations.  Return the coordinates reached when it escapes, and
+        /// the number of iteration taken to do so.  If the point does not
+        /// escape, return iInfinity and the coordinates at the last iteration
+        /// performed.
+        /// </summary>
+        protected abstract ConvergenceCheckResult checkConvergence(double rxPoint, double ryPoint, int iMax);
 
         #endregion
 
         #region public functions
 
-        /* Generate and return an image that corresponds to the passed-in info.
-         * Test for escape up to iMax iterations.
-         */
-        public Image generate(
-            ImageInfo info,
-            int iMax
-        )
+        /// <summary>
+        /// Generate and return an image that corresponds to the passed info.
+        /// </summary>
+        /// <exception cref="Exception">
+        /// Thrown when the no reasonable image can be generated.  Possible reasons for this are:
+        ///  - The scale is too small.
+        /// </exception>
+        public Image generate(ImageInfo info)
         {
             Bitmap newImage = new Bitmap(info.pxSize, info.pySize, PixelFormat.Format32bppRgb);
             BitmapData bmd = newImage.LockBits(
@@ -141,36 +145,36 @@ namespace Mandelbrot
             
             IList<PartInfo> parts;
             
-            if (this.oldInfo.pCentre != info.pCentre && !this.oldInfo.pSize.IsEmpty)
+            if (ImageCombination.CombinationPossible(this.oldInfo, info))
             {
                 ImageCombination combination = new ImageCombination(oldInfo, info); // Hm, I'd usually use var here.
                 this.moveImage(bmd, combination);
-                parts = this.makePartsFromWhole(info, combination.OverlapInSecond, bmd.Scan0, iMax);
+                parts = this.makePartsFromWhole(info, combination.OverlapInSecond, bmd.Scan0);
             }
             else
             {
-                parts = this.makePartsFromWhole(info, FractalGenerator.AbsentIgnoredArea, bmd.Scan0, iMax);
+                parts = this.makePartsFromWhole(info, FractalGenerator.AbsentIgnoredArea, bmd.Scan0);
             }
             Parallel.ForEach(parts, generatePart);
             newImage.UnlockBits(bmd);
             this.oldInfo = info;
-            this.oldImage = newImage;
+            this.lastImage = newImage;
             return newImage;
         }
-
         #endregion
 
         #region private functions
 
-        /* Split the image surface into several parts, with each part
-         * containing all the necessary information to render it. 
-         *
-         * Parameters:
-         *   wholeImage - information about the entire image
-         *   begin      - pointer to first pixel of image
-         *   iMax       - maximum number of iterations to try for
-         */
-        IList<PartInfo> makePartsFromWhole(ImageInfo wholeImage, Rectangle ignoredArea, IntPtr begin, int iMax)
+        /// <summary>
+        /// Split the image surface into several parts, with each part
+        /// containing all the necessary information to render it. 
+        /// </summary>
+        ///
+        /// <param name="wholeImage">Information about the entire image.</param>
+        /// <param name="ignoredArea">Rectangle of area that should not be generated.</param>
+        /// <param name="begin">Pointer to first pixel of image (32bppRGB).</param>
+        /// <returns>Information on the parts the image has been split into.</returns>
+        IList<PartInfo> makePartsFromWhole(ImageInfo wholeImage, Rectangle ignoredArea, IntPtr begin)
         {
             // List of parts that will be returned.
             List<PartInfo> parts = new List<PartInfo>();
@@ -185,17 +189,29 @@ namespace Mandelbrot
              * 
              * The four rectangles are placed in List<Rectangle> sections.
              */
-            List<Rectangle> sections = new List<Rectangle>();
+            IList<Rectangle> sections = new List<Rectangle>();
             sections.Add(new Rectangle(0, 0, wholeImage.pxSize, ignoredArea.Y));
             sections.Add(new Rectangle(0, ignoredArea.Y, ignoredArea.X, ignoredArea.Height));
             sections.Add(new Rectangle(ignoredArea.X + ignoredArea.Width, ignoredArea.Y, wholeImage.pxSize - ignoredArea.X - ignoredArea.Width, ignoredArea.Height));
             sections.Add(new Rectangle(0, ignoredArea.Y + ignoredArea.Height, wholeImage.pxSize, wholeImage.pySize - ignoredArea.Y - ignoredArea.Height));
             foreach (Rectangle rect in sections)
-                parts.AddRange(makePartsFromSection(wholeImage, rect, begin, iMax));
+                parts.AddRange(makePartsFromSection(wholeImage, rect, begin));
             return parts;
         }
 
-        private List<PartInfo> makePartsFromSection(ImageInfo wholeImage, Rectangle workArea, IntPtr begin, int iMax)
+        /// <summary>
+        /// Split a section of an image into parts, each of which can be rendered separately.
+        /// </summary>
+        /// <remarks>
+        /// This function should be called by <see cref="makePartsFromWhole"/>, don't call
+        /// from elsewhere.
+        /// </remarks>
+        /// 
+        /// <param name="wholeImage">Information about the whole image.</param>
+        /// <param name="workArea">Area to be partitioned.</param>
+        /// <param name="begin">Pointer to the first pixel of the image (32bppRGB)</param>
+        /// <returns>Information on the parts that the image has been split into.</returns>
+        private IList<PartInfo> makePartsFromSection(ImageInfo wholeImage, Rectangle workArea, IntPtr begin)
         {
             List<PartInfo> parts = new List<PartInfo>();
 
@@ -203,7 +219,7 @@ namespace Mandelbrot
             // TODO:  If almost all pixels are distributed, slightly more than
             // this should be given to a part.
             // Note:  The p2 prefix stands for `pixel squared', and is the result
-            // of the product of two pixel counts.
+            // of the product of two pixel counts (px * py, to be specific).
             const int p2PreferredBlockSize = 50000;
 
             // Number of pixels that still need to be distributed.
@@ -214,7 +230,7 @@ namespace Mandelbrot
             int pyCurrentPosition = 0;
             while (p2Free != 0)
             {
-                PartInfo nextPart = new PartInfo(wholeImage.pxSize, wholeImage.rScale, iMax);
+                PartInfo nextPart = new PartInfo(wholeImage.pxSize, wholeImage.rScale, wholeImage.iMax, wholeImage.palette);
                 nextPart.pxPartSize = workArea.Width;
                 nextPart.rxStart = wholeImage.rxValue(workArea.X);
                 nextPart.ryStart = wholeImage.ryValue(workArea.Y + pyCurrentPosition);
@@ -245,7 +261,10 @@ namespace Mandelbrot
             return parts;
         }
 
-        // Given information on the part to be generated, generate it.
+        /// <summary>
+        /// Given information on a part of the image, draw that part.
+        /// </summary>
+        /// <param name="info">Information on a part of the image.</param>
         private unsafe void generatePart(PartInfo info)
         {
             Int32* currentPixel = (Int32*)info.imageData.ToPointer();
@@ -257,7 +276,7 @@ namespace Mandelbrot
                 for (int pxCounter = 0; pxCounter < info.pxPartSize; ++pxCounter)
                 {
                     ConvergenceCheckResult res = this.checkConvergence(rxCurrent, ryCurrent, info.iMax);
-                    *currentPixel = this.getColour(res);
+                    *currentPixel = this.getColour(res, info.palette);
                     currentPixel += 1;
                     rxCurrent += info.scale;
                 }
@@ -267,18 +286,23 @@ namespace Mandelbrot
             }
         }
 
-        // Move the existing image by pShift pixels.
+        /// <summary>
+        /// Copy a piece of the old image over to the new image, moving it as requested by
+        /// the ImageCombination.
+        /// </summary>
+        /// <param name="newImageData">Data of the image currently being generated.</param>
+        /// <param name="combination">A combination of the old image and new image.</param>
         private void moveImage(BitmapData newImageData, ImageCombination combination)
         {
-            int pxOldSize = this.oldImage.Width;
-            int pyOldSize = this.oldImage.Height;
+            int pxOldSize = this.lastImage.Width;
+            int pyOldSize = this.lastImage.Height;
             int pxNewSize = newImageData.Width;
             int pyNewSize = newImageData.Height;
 
-            BitmapData oldImageData = this.oldImage.LockBits(
+            BitmapData oldImageData = this.lastImage.LockBits(
                 new Rectangle(0, 0, pxOldSize, pyOldSize),
                 ImageLockMode.ReadOnly,
-                oldImage.PixelFormat
+                lastImage.PixelFormat
             );
 
             int pxToSkipOld = pxOldSize - combination.pxSize;
@@ -298,24 +322,26 @@ namespace Mandelbrot
                     dest += pxToSkipNew;
                 }
             }
-            this.oldImage.UnlockBits(oldImageData);
+            this.lastImage.UnlockBits(oldImageData);
         }
 
         /* Given the coordinates of a point and the number of iterations
          * necessary to reach it, return the colour that that pixel should
          * be given.
-         *
-         * It might be reasonable to make this a static, non-virtual function
-         * and use a List for storing the colours instead. -- Anton
          */
-        protected Int32 getColour(ConvergenceCheckResult res)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="res"></param>
+        /// <returns></returns>
+        protected Int32 getColour(ConvergenceCheckResult res, ColourPalette palette)
         {
             if (res.iCount == iInfinity)
                 return 0; // black
 
             double v = res.iCount - Math.Log(0.5 * Math.Log(res.rxPoint * res.rxPoint + res.ryPoint * res.ryPoint, 1E100), 2);
             int colourInt1 = (int)v & 0x1FF;
-            return colourPalette[colourInt1];
+            return palette[colourInt1];
         }
 
         #endregion
