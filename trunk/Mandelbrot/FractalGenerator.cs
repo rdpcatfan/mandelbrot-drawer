@@ -83,7 +83,7 @@ namespace Mandelbrot
         private ImageInfo oldInfo;
         
         // Constant for specifying a non-existant ignored area.
-        private static readonly Rectangle AbsentIgnoredArea = new Rectangle(-1, -1, 0, 0);
+        private static readonly Rectangle AbsentIgnoredArea = new Rectangle(0, 0, 0, 0);
 
         // Stores the previous image.
         private Bitmap oldImage;
@@ -173,8 +173,24 @@ namespace Mandelbrot
         {
             // List of parts that will be returned.
             List<PartInfo> parts = new List<PartInfo>();
-            parts.AddRange(makePartsFromSection(wholeImage, new Rectangle(0, 0, wholeImage.pxCentre, wholeImage.pySize), begin, iMax));
-            parts.AddRange(makePartsFromSection(wholeImage, new Rectangle(wholeImage.pxCentre, 0, wholeImage.pxCentre, wholeImage.pySize), begin, iMax));
+            /* Places that need to be allocated:
+             * 
+             * +------+
+             * |000000|
+             * |11xxx2|
+             * |11xxx2|
+             * |333333|
+             * +------+
+             * 
+             * The four rectangles are placed in List<Rectangle> sections.
+             */
+            List<Rectangle> sections = new List<Rectangle>();
+            sections.Add(new Rectangle(0, 0, wholeImage.pxSize, ignoredArea.Y));
+            sections.Add(new Rectangle(0, ignoredArea.Y, ignoredArea.X, ignoredArea.Height));
+            sections.Add(new Rectangle(ignoredArea.X + ignoredArea.Width, ignoredArea.Y, wholeImage.pxSize - ignoredArea.X - ignoredArea.Width, ignoredArea.Height));
+            sections.Add(new Rectangle(0, ignoredArea.Y + ignoredArea.Height, wholeImage.pxSize, wholeImage.pySize - ignoredArea.Y - ignoredArea.Height));
+            foreach (Rectangle rect in sections)
+                parts.AddRange(makePartsFromSection(wholeImage, rect, begin, iMax));
             return parts;
         }
 
