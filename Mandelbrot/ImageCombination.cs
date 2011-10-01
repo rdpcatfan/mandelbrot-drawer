@@ -90,8 +90,8 @@ namespace Mandelbrot
                 "Sorry, mapping of images of different sizes is not yet supported.");
             Debug.Assert(mapFrom.rScale == mapTo.rScale,
                 "Attempted to map images with different scales.");
-            int pxShift = (int)((mapFrom.rxCentre - mapTo.rxCentre) / mapFrom.rScale);
-            int pyShift = -(int)((mapFrom.ryCentre - mapTo.ryCentre) / mapFrom.rScale);
+            int pxShift = (int)((mapTo.rxCentre - mapFrom.rxCentre) / mapFrom.rScale);
+            int pyShift = -(int)((mapTo.ryCentre - mapFrom.ryCentre) / mapFrom.rScale);
             if (pxShift > 0)
             {
                 this.pxBeginInFirst = pxShift;
