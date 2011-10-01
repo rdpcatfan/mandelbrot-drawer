@@ -172,6 +172,7 @@
             // 
             // MainWindow
             // 
+            this.AcceptButton = this.generateImageButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(540, 620);
@@ -189,10 +190,9 @@
             this.MinimumSize = new System.Drawing.Size(556, 658);
             this.Name = "MainWindow";
             this.Text = "Mandelbrot Generator";
-            //this.ResizeEnd += new System.EventHandler(this.setImageContainerSize);
-            this.ResizeBegin += new System.EventHandler(setResizeFlag);
+            this.ResizeBegin += new System.EventHandler(this.setResizeFlag);
+            this.ResizeEnd += new System.EventHandler(this.resizeImageContainer);
             this.Resize += new System.EventHandler(this.tryResizeImageContainer);
-            this.ResizeEnd += new System.EventHandler(resizeImageContainer);
             ((System.ComponentModel.ISupportInitialize)(this.mandelImageContainer)).EndInit();
             this.statusStrip.ResumeLayout(false);
             this.statusStrip.PerformLayout();
