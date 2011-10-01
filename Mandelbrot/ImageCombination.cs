@@ -67,53 +67,42 @@ namespace Mandelbrot
     {
         public readonly int pxSize;
         public readonly int pySize;
-        public readonly int pxBeginInFirst;
-        public readonly int pyBeginInFirst;
-        public readonly int pxBeginInSecond;
-        public readonly int pyBeginInSecond;
+        public readonly int pxBeginInSource;
+        public readonly int pyBeginInSource;
+        public readonly int pxBeginInDestination;
+        public readonly int pyBeginInDestination;
         
         // Overlap in the second rectangle.
         public Rectangle OverlapInSecond
         {
             get
             {
-                return new Rectangle(pxBeginInSecond, pyBeginInSecond, pxSize, pySize);
+                return new Rectangle(pxBeginInDestination, pyBeginInDestination, pxSize, pySize);
             }
         }
 
         public ImageCombination(ImageInfo mapFrom, ImageInfo mapTo)
         {
-            // This method does not work if the size of mapFrom and mapTo are not
-            // equal, it's probably best to rewrite this, but I'm not yet sure how.
-            // (Also, FractalGenerator does not support that yet.)
-            Debug.Assert(mapFrom.pSize == mapTo.pSize,
-                "Sorry, mapping of images of different sizes is not yet supported.");
             Debug.Assert(mapFrom.rScale == mapTo.rScale,
                 "Attempted to map images with different scales.");
-            int pxShift = (int)((mapTo.rxCentre - mapFrom.rxCentre) / mapFrom.rScale);
-            int pyShift = -(int)((mapTo.ryCentre - mapFrom.ryCentre) / mapFrom.rScale);
-            if (pxShift > 0)
-            {
-                this.pxBeginInFirst = pxShift;
-                this.pxBeginInSecond = 0;
-            }
-            else
-            {
-                this.pxBeginInFirst = 0;
-                this.pxBeginInSecond = -pxShift;
-            }
-            if (pyShift > 0)
-            {
-                this.pyBeginInFirst = pyShift;
-                this.pyBeginInSecond = 0;
-            }
-            else
-            {
-                this.pyBeginInFirst = 0;
-                this.pyBeginInSecond = -pyShift;
-            }
-            this.pxSize = mapFrom.pxSize - Math.Abs(pxShift);
-            this.pySize = mapFrom.pySize - Math.Abs(pyShift);
+
+            Point centreInMapTo = mapTo.pCoordinatesOf(mapFrom.rxCentre, mapFrom.ryCentre);
+            Point centreInMapFrom = mapFrom.pCentre;
+
+            // The following four lines construct a description of the rectangle to be copied,
+            // relative to a centre in each image.
+            int pxToBegin = Math.Min(centreInMapFrom.X, centreInMapTo.X);
+            int pyToBegin = Math.Min(centreInMapFrom.Y, centreInMapTo.Y);
+            int pxToEnd = Math.Min(mapFrom.pxSize - centreInMapFrom.X, mapTo.pxSize - centreInMapTo.X);
+            int pyToEnd = Math.Min(mapFrom.pySize - centreInMapFrom.Y, mapTo.pySize - centreInMapTo.Y);
+            
+            // Now let's translate that rectangle into coordinates of each image.
+            this.pxBeginInSource = centreInMapFrom.X - pxToBegin;
+            this.pxBeginInDestination = centreInMapTo.X - pxToBegin;
+            this.pyBeginInSource = centreInMapFrom.Y - pyToBegin;
+            this.pyBeginInDestination = centreInMapTo.Y - pyToBegin;
+            this.pxSize = pxToBegin + pxToEnd;
+            this.pySize = pyToBegin + pyToEnd;
         }
     }
 }

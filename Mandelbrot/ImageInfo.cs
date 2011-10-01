@@ -25,12 +25,22 @@ namespace Mandelbrot
         #region help properties
         public double rxBegin
         {
-            get { return this.rxCentre - this.pyCentre * this.rScale; }
+            get { return this.rxCentre - this.pxCentre * this.rScale; }
         }
 
         public double ryBegin
         {
-            get { return this.ryCentre + this.pxCentre * this.rScale; }
+            get { return this.ryCentre + this.pyCentre * this.rScale; }
+        }
+
+        public double rxEnd
+        {
+            get { return this.rxCentre + this.pxCentre * this.rScale; }
+        }
+
+        public double ryEnd
+        {
+            get { return this.ryCentre - this.pyCentre * this.rScale; }
         }
 
         public Size pSize
@@ -85,6 +95,21 @@ namespace Mandelbrot
         public double ryValue(int pyPosition)
         {
             return this.ryCentre - this.rScale * (pyPosition - this.pyCentre);
+        }
+
+        public int pxCoordinateOf(double rxPoint)
+        {
+            return (int)((rxPoint - rxBegin) / rScale);
+        }
+
+        public int pyCoordinateOf(double ryPoint)
+        {
+            return (int)(-(ryPoint - ryBegin) / rScale);
+        }
+
+        public Point pCoordinatesOf(double rxPoint, double ryPoint)
+        {
+            return new Point(pxCoordinateOf(rxPoint), pyCoordinateOf(ryPoint));
         }
     }
 }
