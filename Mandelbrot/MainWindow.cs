@@ -178,9 +178,48 @@ namespace Mandelbrot
          */
         private void setImageContainerSize()
         {
-            mandelImageContainer.Size = new Size(this.ClientSize.Width - 40, this.ClientSize.Height - 120);
+            mandelImageContainer.Size = new Size(this.ClientSize.Width - 40, this.ClientSize.Height - 140);
             this.generateFractal();
         }
         #endregion
+
+        private void resetImage(object sender, EventArgs e)
+        {
+            centreXTextBox.Double = 0.0;
+            centreYTextBox.Double = 0.0;
+            scaleTextBox.Double = 0.01;
+            maxIterationsTextBox.Text = "500";
+            generateFractal();
+        }
+
+        private void saveImage(object sender, EventArgs e)
+        {
+            saveImageDialog.ShowDialog();
+            if (saveImageDialog.FileName != "")
+            {
+                switch (saveImageDialog.FilterIndex)
+                {
+                    case 1:
+                        mandelImageContainer.Image.Save(saveImageDialog.FileName,
+                           System.Drawing.Imaging.ImageFormat.Bmp);
+                        break;
+
+                    case 2:
+                        mandelImageContainer.Image.Save(saveImageDialog.FileName,
+                           System.Drawing.Imaging.ImageFormat.Jpeg);
+                        break;
+
+                    case 3:
+                        mandelImageContainer.Image.Save(saveImageDialog.FileName,
+                           System.Drawing.Imaging.ImageFormat.Gif);
+                        break;
+                }
+            }
+        }
+
+        private void exitApplication(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
     }
 }
