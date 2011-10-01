@@ -271,6 +271,8 @@ namespace Mandelbrot
         {
             int pxOldSize = this.oldImage.Width;
             int pyOldSize = this.oldImage.Height;
+            int pxNewSize = newImageData.Width;
+            int pyNewSize = newImageData.Height;
 
             BitmapData oldImageData = this.oldImage.LockBits(
                 new Rectangle(0, 0, pxOldSize, pyOldSize),
@@ -278,20 +280,21 @@ namespace Mandelbrot
                 oldImage.PixelFormat
             );
 
-            int pxToSkip = pxOldSize - combination.pxSize;
+            int pxToSkipOld = pxOldSize - combination.pxSize;
+            int pxToSkipNew = pxNewSize - combination.pxSize;
             
             unsafe {
                 Int32* src = (Int32*)oldImageData.Scan0.ToPointer();
-                src += combination.pxBeginInFirst + combination.pyBeginInFirst * pxOldSize;
+                src += combination.pxBeginInSource + combination.pyBeginInSource * pxOldSize;
                 Int32* dest = (Int32*)newImageData.Scan0.ToPointer();
-                dest += combination.pxBeginInSecond + combination.pyBeginInSecond * pxOldSize;
+                dest += combination.pxBeginInDestination + combination.pyBeginInDestination * pxNewSize;
                 for (int pyCounter = 0; pyCounter < combination.pySize; ++pyCounter)
                 {
                     Int32* end = dest + combination.pxSize;
                     while (dest < end)
                         *dest++ = *src++;
-                    src += pxToSkip;
-                    dest += pxToSkip;
+                    src += pxToSkipOld;
+                    dest += pxToSkipNew;
                 }
             }
             this.oldImage.UnlockBits(oldImageData);
