@@ -39,6 +39,11 @@ namespace Mandelbrot
 
         IDictionary<string, ColourPalette> colours;
 
+        /// <summary>
+        /// Holds the current mouse position in an image drag operation.
+        /// </summary>
+        Point mouseDownPosition, dragPosition;
+
         #endregion
 
         #region constructors
@@ -108,30 +113,6 @@ namespace Mandelbrot
             generateFractal();
         }
 
-        /* Event to be called on a single click on the image.
-         *
-         * Renaming this method is probably a good idea, and perhaps even
-         * splitting the business logic off entirely -- we'll need to
-         * change the centre to certain X and Y coordinates for other events
-         * too, right?
-         */
-        private void setImageCentre(object sender, MouseEventArgs e)
-        {
-            /* As accessing this.scaleTextBox.Double is a fairly expensive
-             * operation, we'll save the value.
-             */
-            double rScale = this.scaleTextBox.Double;
-            /* The following two lines calculate the distance between the old
-             * centre and the new centre on the screen, and then convert that
-             * to the difference in the value.
-             *
-             * Note the difference in the calculation of Y:  the rational
-             * can be found in FractalGenerator.cs.
-             */
-            centreXTextBox.Double += (e.X - mandelImageContainer.Size.Width / 2) * rScale;
-            centreYTextBox.Double -= (e.Y - mandelImageContainer.Size.Height / 2) * rScale;
-            this.generateFractal();
-        }
 
         /* Ensures that the image always has focus if the mouse is above it.
          * This is done so that the scroll functionality always works, 
@@ -156,6 +137,58 @@ namespace Mandelbrot
             this.generateFractal();
         }
 
+        /// <summary>
+        /// Sets variables based on the position of the MouseDownEvent, 
+        /// which will be used in dragImage and dragImageEnd.
+        /// </summary>
+        private void dragImageStart(object sender, MouseEventArgs e)
+        {
+            mouseDownPosition = new Point(e.X, e.Y);
+            dragPosition = new Point(e.X, e.Y);
+        }
+
+        /// <summary>
+        /// Repositions the image relative to its current position when 
+        /// the image is dragged. 
+        /// </summary>
+        private void dragImage(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                double rScale = this.scaleTextBox.Double;
+                this.centreXTextBox.Double += (dragPosition.X - e.X) * rScale;
+                this.centreYTextBox.Double -= (dragPosition.Y - e.Y) * rScale;
+                dragPosition = new Point(e.X, e.Y);
+                generateFractal();
+            }
+        }
+
+        /// <summary>
+        /// If the image was not moved through ImageDrag, the image will be centred 
+        /// on the position of the mouse click.
+        /// </summary>
+        private void dragImageEnd(object sender, MouseEventArgs e)
+        {
+            Point mouseUpPosition = new Point(e.X, e.Y);
+            if (mouseDownPosition == mouseUpPosition)
+            {
+                /* As accessing this.scaleTextBox.Double is a fairly expensive
+                 * operation, we'll save the value.
+                 */
+                double rScale = this.scaleTextBox.Double;
+                /* The following two lines calculate the distance between the old
+                 * centre and the new centre on the screen, and then convert that
+                 * to the difference in the value.
+                 *
+                 * Note the difference in the calculation of Y:  the rational
+                 * can be found in FractalGenerator.cs.
+                 */
+                centreXTextBox.Double += (e.X - mandelImageContainer.Size.Width / 2) * rScale;
+                centreYTextBox.Double -= (e.Y - mandelImageContainer.Size.Height / 2) * rScale;
+                this.generateFractal();
+            }
+        }
+
         /* setResizeFlag is fired in respons to the ResizeBegin event of the main form.
          * ResizeBegin fires once when the border of the form is dragged. 
          * It does not fire when the 'maximize' button of the form is clicked. 
@@ -173,7 +206,7 @@ namespace Mandelbrot
          */
         private void tryResizeImageContainer(object sender, EventArgs e)
         {
-            statusStripSizeLabel.Text = "Afmetingen: " + (this.ClientSize.Width - 40) + " x " + (this.ClientSize.Height - 120);
+            statusStripSizeLabel.Text = "Afmetingen: " + (this.ClientSize.Width - 40) + " x " + (this.ClientSize.Height - 140);
             if (!resizeBeginTriggered)
                 setImageContainerSize();
         }
@@ -192,11 +225,13 @@ namespace Mandelbrot
          */
         private void setImageContainerSize()
         {
-            mandelImageContainer.Size = new Size(this.ClientSize.Width - 40, this.ClientSize.Height - 140);
+            mandelImageContainer.Size = new Size(this.ClientSize.Width - 40, this.ClientSize.Height - 180);
             this.generateFractal();
         }
-        #endregion
 
+        /// <summary>
+        /// Resets the image to the default starting position, scale and iterations.
+        /// </summary>
         private void resetImage(object sender, EventArgs e)
         {
             centreXTextBox.Double = 0.0;
@@ -206,6 +241,9 @@ namespace Mandelbrot
             generateFractal();
         }
 
+        /// <summary>
+        /// Opens a SaveFileDialog, allowing the current image in the mandelImageContainer to be saved as a bitmap, jpeg or gif.
+        /// </summary>
         private void saveImage(object sender, EventArgs e)
         {
             saveImageDialog.ShowDialog();
@@ -231,9 +269,22 @@ namespace Mandelbrot
             }
         }
 
+        /// <summary>
+        /// Exits the application.
+        /// </summary>
         private void exitApplication(object sender, EventArgs e)
         {
             Application.Exit();
         }
+
+        /// <summary>
+        /// Opens the AboutBox dialog.
+        /// </summary>
+        private void openAboutBox(object sender, EventArgs e)
+        {
+            AboutBox about = new AboutBox();
+            about.ShowDialog();
+        }
+        #endregion
     }
 }

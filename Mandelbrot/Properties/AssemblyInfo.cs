@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Mandelbrot")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Mandelbrot Generator")]
+[assembly: AssemblyDescription("A mandelbrot fractal generator")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Microsoft")]
-[assembly: AssemblyProduct("Mandelbrot")]
-[assembly: AssemblyCopyright("Copyright © Microsoft 2011")]
+[assembly: AssemblyCompany("A.M. Golov  -   R.W. van den Broek")]
+[assembly: AssemblyProduct("Mandelbrot Generator")]
+[assembly: AssemblyCopyright("Copyright © 2011")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
