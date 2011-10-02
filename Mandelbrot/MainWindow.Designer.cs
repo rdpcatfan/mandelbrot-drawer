@@ -45,17 +45,25 @@
             this.menuStripStartExit = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStripHelpList = new System.Windows.Forms.ToolStripMenuItem();
             this.saveImageDialog = new System.Windows.Forms.SaveFileDialog();
+            this.colourChoiceLabel = new System.Windows.Forms.Label();
+            this.colourChoiceComboBox = new System.Windows.Forms.ComboBox();
+            this.ownColourCheckBox = new System.Windows.Forms.CheckBox();
+            this.ownColourBox1 = new System.Windows.Forms.PictureBox();
+            this.ownColourBox2 = new System.Windows.Forms.PictureBox();
+            this.ownColourBox3 = new System.Windows.Forms.PictureBox();
+            this.ownColourBox4 = new System.Windows.Forms.PictureBox();
             this.scaleTextBox = new Mandelbrot.DoubleBox();
             this.centreYTextBox = new Mandelbrot.DoubleBox();
             this.centreXTextBox = new Mandelbrot.DoubleBox();
-            this.labelColourChoice = new System.Windows.Forms.Label();
-            this.comboBoxColourChoice = new System.Windows.Forms.ComboBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.menuStripHelpInformation = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStripHelpAbout = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.mandelImageContainer)).BeginInit();
             this.statusStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ownColourBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ownColourBox2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ownColourBox3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ownColourBox4)).BeginInit();
             this.SuspendLayout();
             // 
             // generateImageButton
@@ -73,7 +81,7 @@
             this.mandelImageContainer.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.mandelImageContainer.Location = new System.Drawing.Point(20, 145);
             this.mandelImageContainer.Name = "mandelImageContainer";
-            this.mandelImageContainer.Size = new System.Drawing.Size(500, 455);
+            this.mandelImageContainer.Size = new System.Drawing.Size(500, 459);
             this.mandelImageContainer.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.mandelImageContainer.TabIndex = 1;
             this.mandelImageContainer.TabStop = false;
@@ -95,7 +103,7 @@
             // centreYLabel
             // 
             this.centreYLabel.AutoSize = true;
-            this.centreYLabel.Location = new System.Drawing.Point(12, 67);
+            this.centreYLabel.Location = new System.Drawing.Point(12, 71);
             this.centreYLabel.Name = "centreYLabel";
             this.centreYLabel.Size = new System.Drawing.Size(55, 13);
             this.centreYLabel.TabIndex = 4;
@@ -121,7 +129,7 @@
             // maxIterationsLabel
             // 
             this.maxIterationsLabel.AutoSize = true;
-            this.maxIterationsLabel.Location = new System.Drawing.Point(159, 70);
+            this.maxIterationsLabel.Location = new System.Drawing.Point(159, 71);
             this.maxIterationsLabel.Name = "maxIterationsLabel";
             this.maxIterationsLabel.Size = new System.Drawing.Size(47, 13);
             this.maxIterationsLabel.TabIndex = 8;
@@ -222,6 +230,65 @@
             this.saveImageDialog.Filter = "Bitmap Afbeelding|*.bmp|JPeg Afbeelding|*.jpg|Gif Afbeelding|*.gif";
             this.saveImageDialog.Title = "Afbeelding Opslaan";
             // 
+            // colourChoiceLabel
+            // 
+            this.colourChoiceLabel.AutoSize = true;
+            this.colourChoiceLabel.Location = new System.Drawing.Point(307, 30);
+            this.colourChoiceLabel.Name = "colourChoiceLabel";
+            this.colourChoiceLabel.Size = new System.Drawing.Size(66, 13);
+            this.colourChoiceLabel.TabIndex = 13;
+            this.colourChoiceLabel.Text = "Kleur keuze:";
+            // 
+            // colourChoiceComboBox
+            // 
+            this.colourChoiceComboBox.FormattingEnabled = true;
+            this.colourChoiceComboBox.Location = new System.Drawing.Point(329, 43);
+            this.colourChoiceComboBox.Name = "colourChoiceComboBox";
+            this.colourChoiceComboBox.Size = new System.Drawing.Size(178, 21);
+            this.colourChoiceComboBox.TabIndex = 14;
+            // 
+            // ownColourCheckBox
+            // 
+            this.ownColourCheckBox.AutoSize = true;
+            this.ownColourCheckBox.Location = new System.Drawing.Point(310, 70);
+            this.ownColourCheckBox.Name = "ownColourCheckBox";
+            this.ownColourCheckBox.Size = new System.Drawing.Size(129, 17);
+            this.ownColourCheckBox.TabIndex = 15;
+            this.ownColourCheckBox.Text = "Eigen kleur gebruiken";
+            this.ownColourCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // ownColourBox1
+            // 
+            this.ownColourBox1.Location = new System.Drawing.Point(352, 86);
+            this.ownColourBox1.Name = "ownColourBox1";
+            this.ownColourBox1.Size = new System.Drawing.Size(21, 20);
+            this.ownColourBox1.TabIndex = 16;
+            this.ownColourBox1.TabStop = false;
+            // 
+            // ownColourBox2
+            // 
+            this.ownColourBox2.Location = new System.Drawing.Point(389, 86);
+            this.ownColourBox2.Name = "ownColourBox2";
+            this.ownColourBox2.Size = new System.Drawing.Size(21, 20);
+            this.ownColourBox2.TabIndex = 17;
+            this.ownColourBox2.TabStop = false;
+            // 
+            // ownColourBox3
+            // 
+            this.ownColourBox3.Location = new System.Drawing.Point(430, 86);
+            this.ownColourBox3.Name = "ownColourBox3";
+            this.ownColourBox3.Size = new System.Drawing.Size(21, 20);
+            this.ownColourBox3.TabIndex = 18;
+            this.ownColourBox3.TabStop = false;
+            // 
+            // ownColourBox4
+            // 
+            this.ownColourBox4.Location = new System.Drawing.Point(472, 86);
+            this.ownColourBox4.Name = "ownColourBox4";
+            this.ownColourBox4.Size = new System.Drawing.Size(21, 20);
+            this.ownColourBox4.TabIndex = 19;
+            this.ownColourBox4.TabStop = false;
+            // 
             // scaleTextBox
             // 
             this.scaleTextBox.Double = 0.01D;
@@ -234,7 +301,7 @@
             // centreYTextBox
             // 
             this.centreYTextBox.Double = 0D;
-            this.centreYTextBox.Location = new System.Drawing.Point(39, 83);
+            this.centreYTextBox.Location = new System.Drawing.Point(39, 86);
             this.centreYTextBox.Name = "centreYTextBox";
             this.centreYTextBox.Size = new System.Drawing.Size(114, 20);
             this.centreYTextBox.TabIndex = 5;
@@ -248,33 +315,6 @@
             this.centreXTextBox.Size = new System.Drawing.Size(114, 20);
             this.centreXTextBox.TabIndex = 3;
             this.centreXTextBox.Text = "0.0";
-            // 
-            // labelColourChoice
-            // 
-            this.labelColourChoice.AutoSize = true;
-            this.labelColourChoice.Location = new System.Drawing.Point(307, 30);
-            this.labelColourChoice.Name = "labelColourChoice";
-            this.labelColourChoice.Size = new System.Drawing.Size(66, 13);
-            this.labelColourChoice.TabIndex = 13;
-            this.labelColourChoice.Text = "Kleur keuze:";
-            // 
-            // comboBoxColourChoice
-            // 
-            this.comboBoxColourChoice.FormattingEnabled = true;
-            this.comboBoxColourChoice.Location = new System.Drawing.Point(329, 43);
-            this.comboBoxColourChoice.Name = "comboBoxColourChoice";
-            this.comboBoxColourChoice.Size = new System.Drawing.Size(178, 21);
-            this.comboBoxColourChoice.TabIndex = 14;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label1.Location = new System.Drawing.Point(326, 81);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(179, 13);
-            this.label1.TabIndex = 15;
-            this.label1.Text = "Choose your own colour here?";
             // 
             // menuStripHelpInformation
             // 
@@ -295,9 +335,13 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(548, 644);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.comboBoxColourChoice);
-            this.Controls.Add(this.labelColourChoice);
+            this.Controls.Add(this.ownColourBox4);
+            this.Controls.Add(this.ownColourBox3);
+            this.Controls.Add(this.ownColourBox2);
+            this.Controls.Add(this.ownColourBox1);
+            this.Controls.Add(this.ownColourCheckBox);
+            this.Controls.Add(this.colourChoiceComboBox);
+            this.Controls.Add(this.colourChoiceLabel);
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.menuStrip);
             this.Controls.Add(this.maxIterationsTextBox);
@@ -322,6 +366,10 @@
             this.statusStrip.PerformLayout();
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ownColourBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ownColourBox2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ownColourBox3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ownColourBox4)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -348,9 +396,13 @@
         private System.Windows.Forms.ToolStripMenuItem menuStripStartSave;
         private System.Windows.Forms.ToolStripMenuItem menuStripStartExit;
         private System.Windows.Forms.SaveFileDialog saveImageDialog;
-        private System.Windows.Forms.Label labelColourChoice;
-        private System.Windows.Forms.ComboBox comboBoxColourChoice;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label colourChoiceLabel;
+        private System.Windows.Forms.ComboBox colourChoiceComboBox;
+        private System.Windows.Forms.CheckBox ownColourCheckBox;
+        private System.Windows.Forms.PictureBox ownColourBox1;
+        private System.Windows.Forms.PictureBox ownColourBox2;
+        private System.Windows.Forms.PictureBox ownColourBox3;
+        private System.Windows.Forms.PictureBox ownColourBox4;
         private System.Windows.Forms.ToolStripMenuItem menuStripHelpList;
         private System.Windows.Forms.ToolStripMenuItem menuStripHelpInformation;
         private System.Windows.Forms.ToolStripMenuItem menuStripHelpAbout;
