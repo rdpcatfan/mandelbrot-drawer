@@ -43,6 +43,7 @@
             this.menuStripStartNew = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStripStartSave = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStripStartExit = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuStripHelpList = new System.Windows.Forms.ToolStripMenuItem();
             this.saveImageDialog = new System.Windows.Forms.SaveFileDialog();
             this.scaleTextBox = new Mandelbrot.DoubleBox();
             this.centreYTextBox = new Mandelbrot.DoubleBox();
@@ -50,6 +51,8 @@
             this.labelColourChoice = new System.Windows.Forms.Label();
             this.comboBoxColourChoice = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.menuStripHelpInformation = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuStripHelpAbout = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.mandelImageContainer)).BeginInit();
             this.statusStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
@@ -74,8 +77,10 @@
             this.mandelImageContainer.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.mandelImageContainer.TabIndex = 1;
             this.mandelImageContainer.TabStop = false;
-            this.mandelImageContainer.MouseClick += new System.Windows.Forms.MouseEventHandler(this.setImageCentre);
+            this.mandelImageContainer.MouseDown += new System.Windows.Forms.MouseEventHandler(this.dragImageStart);
             this.mandelImageContainer.MouseEnter += new System.EventHandler(this.setImageFocus);
+            this.mandelImageContainer.MouseMove += new System.Windows.Forms.MouseEventHandler(this.dragImage);
+            this.mandelImageContainer.MouseUp += new System.Windows.Forms.MouseEventHandler(this.dragImageEnd);
             this.mandelImageContainer.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.setImageZoom);
             // 
             // centreXLabel
@@ -142,7 +147,7 @@
             this.statusStripSizeLabel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.statusStripSizeLabel.Name = "statusStripSizeLabel";
             this.statusStripSizeLabel.Padding = new System.Windows.Forms.Padding(5, 0, 5, 0);
-            this.statusStripSizeLabel.Size = new System.Drawing.Size(98, 15);
+            this.statusStripSizeLabel.Size = new System.Drawing.Size(97, 15);
             this.statusStripSizeLabel.Text = "Size:  500 x 500";
             // 
             // statusStripTimeLabel
@@ -150,19 +155,20 @@
             this.statusStripTimeLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
             this.statusStripTimeLabel.Name = "statusStripTimeLabel";
             this.statusStripTimeLabel.Padding = new System.Windows.Forms.Padding(5, 0, 5, 0);
-            this.statusStripTimeLabel.Size = new System.Drawing.Size(103, 15);
+            this.statusStripTimeLabel.Size = new System.Drawing.Size(110, 15);
             this.statusStripTimeLabel.Text = "Generated in: ms";
             // 
             // menuStrip
             // 
             this.menuStrip.BackColor = System.Drawing.SystemColors.Control;
             this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.menuStripStartList});
+            this.menuStripStartList,
+            this.menuStripHelpList});
             this.menuStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Flow;
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
             this.menuStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.menuStrip.Size = new System.Drawing.Size(548, 21);
+            this.menuStrip.Size = new System.Drawing.Size(548, 23);
             this.menuStrip.TabIndex = 12;
             this.menuStrip.Text = "menuStrip1";
             // 
@@ -174,14 +180,14 @@
             this.menuStripStartSave,
             this.menuStripStartExit});
             this.menuStripStartList.Name = "menuStripStartList";
-            this.menuStripStartList.Size = new System.Drawing.Size(43, 17);
+            this.menuStripStartList.Size = new System.Drawing.Size(43, 19);
             this.menuStripStartList.Text = "Start";
             // 
             // menuStripStartNew
             // 
             this.menuStripStartNew.Name = "menuStripStartNew";
             this.menuStripStartNew.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.menuStripStartNew.Size = new System.Drawing.Size(216, 22);
+            this.menuStripStartNew.Size = new System.Drawing.Size(218, 22);
             this.menuStripStartNew.Text = "Nieuw";
             this.menuStripStartNew.Click += new System.EventHandler(this.resetImage);
             // 
@@ -189,16 +195,25 @@
             // 
             this.menuStripStartSave.Name = "menuStripStartSave";
             this.menuStripStartSave.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.menuStripStartSave.Size = new System.Drawing.Size(216, 22);
+            this.menuStripStartSave.Size = new System.Drawing.Size(218, 22);
             this.menuStripStartSave.Text = "Afbeelding Opslaan";
             this.menuStripStartSave.Click += new System.EventHandler(this.saveImage);
             // 
             // menuStripStartExit
             // 
             this.menuStripStartExit.Name = "menuStripStartExit";
-            this.menuStripStartExit.Size = new System.Drawing.Size(216, 22);
+            this.menuStripStartExit.Size = new System.Drawing.Size(218, 22);
             this.menuStripStartExit.Text = "Afsluiten";
             this.menuStripStartExit.Click += new System.EventHandler(this.exitApplication);
+            // 
+            // menuStripHelpList
+            // 
+            this.menuStripHelpList.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuStripHelpInformation,
+            this.menuStripHelpAbout});
+            this.menuStripHelpList.Name = "menuStripHelpList";
+            this.menuStripHelpList.Size = new System.Drawing.Size(44, 19);
+            this.menuStripHelpList.Text = "Help";
             // 
             // saveImageDialog
             // 
@@ -260,6 +275,19 @@
             this.label1.Size = new System.Drawing.Size(179, 13);
             this.label1.TabIndex = 15;
             this.label1.Text = "Choose your own colour here?";
+            // 
+            // menuStripHelpInformation
+            // 
+            this.menuStripHelpInformation.Name = "menuStripHelpInformation";
+            this.menuStripHelpInformation.Size = new System.Drawing.Size(219, 22);
+            this.menuStripHelpInformation.Text = "Mandelbrot Generator Help";
+            // 
+            // menuStripHelpAbout
+            // 
+            this.menuStripHelpAbout.Name = "menuStripHelpAbout";
+            this.menuStripHelpAbout.Size = new System.Drawing.Size(219, 22);
+            this.menuStripHelpAbout.Text = "Over Mandelbrot Generator";
+            this.menuStripHelpAbout.Click += new System.EventHandler(this.openAboutBox);
             // 
             // MainWindow
             // 
@@ -323,6 +351,9 @@
         private System.Windows.Forms.Label labelColourChoice;
         private System.Windows.Forms.ComboBox comboBoxColourChoice;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ToolStripMenuItem menuStripHelpList;
+        private System.Windows.Forms.ToolStripMenuItem menuStripHelpInformation;
+        private System.Windows.Forms.ToolStripMenuItem menuStripHelpAbout;
 
     }
 }
