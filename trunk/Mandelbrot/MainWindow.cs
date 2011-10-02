@@ -189,40 +189,44 @@ namespace Mandelbrot
             }
         }
 
-        /* setResizeFlag is fired in respons to the ResizeBegin event of the main form.
-         * ResizeBegin fires once when the border of the form is dragged. 
-         * It does not fire when the 'maximize' button of the form is clicked. 
-         */
+        /// <summary>
+        /// setResizeFlag is fired in response to the ResizeBegin event of the main form.
+        /// ResizeBegin fires once when the border of the form is dragged. 
+        /// It does not fire when the 'maximize' button of the form is clicked. 
+        /// </summary>
         private void setResizeFlag(object sender, EventArgs e)
         {
             resizeBeginTriggered = true;
         }
 
-        /* tryResizeImageContainer is fired in respons to the Resize event of the main form.
-         * ResizeBegin fires zero or more times when the border of the form is dragged. 
-         * It fires once when the 'maximize' button of the form is clicked.
-         * tryResizeImageContainer updates the current size in the status strip and 
-         * resizes the image when the 'maximize' button is clicked.
-         */
+        /// <summary>
+        /// tryResizeImageContainer is fired in response to the Resize event of the main form.
+        /// ResizeBegin fires zero or more times when the border of the form is dragged. 
+        /// It fires once when the 'maximize' button of the form is clicked.
+        /// tryResizeImageContainer updates the current size in the status strip and 
+        /// resizes the image when the 'maximize' button is clicked.
+        /// </summary>
         private void tryResizeImageContainer(object sender, EventArgs e)
         {
-            statusStripSizeLabel.Text = "Afmetingen: " + (this.ClientSize.Width - 40) + " x " + (this.ClientSize.Height - 140);
+            statusStripSizeLabel.Text = "Afmetingen: " + this.mandelImageContainer + " x " + this.mandelImageContainer;
             if (!resizeBeginTriggered)
                 setImageContainerSize();
         }
 
-        /* Fires once when the resize of the form has ended if a ResizeBegin event has been raised.
-         * Resets the flag and resizes the image.
-         */
+        /// <summary>
+        /// Fires once when the resize of the form has ended if a ResizeBegin event has been raised.
+        /// Resets the flag and resizes the image.
+        /// </summary>
         private void resizeImageContainer(object sender, EventArgs e)
         {
             resizeBeginTriggered = false;
             setImageContainerSize();
         }
 
-        /* Resizes the mandelImageContainer, while preserving the distance to the border of the form.
-         * Updates the image to adjust to the new size of the image container.
-         */
+        /// <summary>
+        /// Resizes the mandelImageContainer, while preserving the distance to the border of the form.
+        /// Updates the image to adjust to the new size of the image container.
+        /// </summary>
         private void setImageContainerSize()
         {
             mandelImageContainer.Size = new Size(this.ClientSize.Width - 40, this.ClientSize.Height - 180);
