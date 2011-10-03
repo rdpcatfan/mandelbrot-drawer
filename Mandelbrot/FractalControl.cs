@@ -16,7 +16,7 @@ namespace Mandelbrot
 
         public IButtonControl AcceptButton;
 
-        private const int pyButtonSize = 15;
+        private const int pyButtonSize = 25;
         private const int pyInternalPadding = 5;
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace Mandelbrot
 
             // input
             this.input.Location = new Point(0, 0);
-            this.input.Size = new Size(this.ClientSize.Width, 40);
+            this.input.Size = this.input.recommendedSize(this.ClientSize.Width);
 
             // generateImageButton
             this.generateImageButton.Text = "Start";
@@ -235,8 +235,11 @@ namespace Mandelbrot
         /// </summary>
         private void sizeChanged(object sender, EventArgs e)
         {
-            this.input.Size = new Size(this.ClientSize.Width - 30, 300);
-            mandelImageContainer.Size = new Size(this.ClientSize.Width - 40, this.ClientSize.Height - 180);
+            this.input.Size = this.input.recommendedSize(this.ClientSize.Width);
+            this.generateImageButton.Location = new Point(0, this.input.Size.Height + pyInternalPadding);
+            this.generateImageButton.Size = new Size(this.ClientSize.Width, pyButtonSize);
+            this.mandelImageContainer.Location = new Point(0, this.generateImageButton.Location.Y + pyButtonSize + pyInternalPadding);
+            this.mandelImageContainer.Size = new Size(this.ClientSize.Width, this.ClientSize.Height - this.input.Size.Height - pyButtonSize - pyInternalPadding * 2);
             this.Invalidate();
         }
         #endregion
