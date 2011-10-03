@@ -154,7 +154,8 @@ namespace Mandelbrot
                 mapFrom.rScale == mapTo.rScale &&
                 mapFrom.rxCentre != mapTo.rxCentre &&
                 mapFrom.ryCentre != mapTo.ryCentre &&
-                mapFrom.iMax == mapTo.iMax;
+                mapFrom.iMax == mapTo.iMax &&
+                mapFrom.palette == mapTo.palette;
         }
     }
 }

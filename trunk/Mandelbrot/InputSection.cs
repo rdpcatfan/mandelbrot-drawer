@@ -36,6 +36,7 @@ namespace Mandelbrot
         private readonly Size standardInputSize = new Size(100, 20);
         private const int pxInternalPadding = 10;
         private const int pyInternalPadding = 5;
+        private const int columns = 3;
         #endregion
 
         #region public properties
@@ -91,11 +92,20 @@ namespace Mandelbrot
         {
             get
             {
-                return colourChoiceBox.SelectedText;
+                return (string)colourChoiceBox.SelectedItem;
             }
             set
             {
-                colourChoiceBox.SelectedText = value;
+                colourChoiceBox.SelectedItem = value;
+            }
+        }
+
+        public override Size MinimumSize
+        {
+            get
+            {
+                int pxMinimum = columns * Math.Max(standardInputSize.Width, standardLabelSize.Width) + (columns - 1) * pxInternalPadding;
+                return new Size(pxMinimum, 100);
             }
         }
         #endregion
@@ -182,9 +192,10 @@ namespace Mandelbrot
                 templabel.Size = standardLabelSize;
                 templabel.TextAlign = ContentAlignment.MiddleRight;
 
-                tempbox.Text = "Default";
                 tempbox.Size = standardInputSize;
                 tempbox.Items.AddRange(validSchemeNames.ToArray());
+                tempbox.Text = "Default";
+                tempbox.SelectedItem = "Default";
                 tempbox.TabIndex = tabindex++;
             }
 
@@ -200,7 +211,6 @@ namespace Mandelbrot
 
         private void layoutInputs(object sender, EventArgs e)
         {
-            const int columns = 3;
             // True if the window is rather narrow
             bool doublerow =
                 columns * (standardInputSize.Width + standardLabelSize.Width) +

@@ -29,9 +29,7 @@ namespace Mandelbrot
         /// </summary>
         private void InitializeComponent()
         {
-            this.generateImageButton = new System.Windows.Forms.Button();
-            this.mandelImageContainer = new System.Windows.Forms.PictureBox();
-            this.input = new InputSection(this.colours.Keys);
+            this.fractal = new FractalControl();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.statusStripSizeLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.statusStripTimeLabel = new System.Windows.Forms.ToolStripStatusLabel();
@@ -44,41 +42,16 @@ namespace Mandelbrot
             this.menuStripHelpInformation = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStripHelpAbout = new System.Windows.Forms.ToolStripMenuItem();
             this.saveImageDialog = new System.Windows.Forms.SaveFileDialog();
-            ((System.ComponentModel.ISupportInitialize)(this.mandelImageContainer)).BeginInit();
             this.statusStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
             this.SuspendLayout();
             //
-            // input
+            // fractal
             //
-            this.input.Location = new Point(15, 30);
-            this.input.Size = new Size(470, 100);
-            // 
-            // generateImageButton
-            // 
-            this.generateImageButton.Location = new System.Drawing.Point(20, 112);
-            this.generateImageButton.Name = "generateImageButton";
-            this.generateImageButton.Size = new System.Drawing.Size(500, 27);
-            this.generateImageButton.TabIndex = 0;
-            this.generateImageButton.Text = "Start";
-            this.generateImageButton.UseVisualStyleBackColor = true;
-            this.generateImageButton.Click += new System.EventHandler(this.generateMandelbrotClick);
-            // 
-            // mandelImageContainer
-            // 
-            this.mandelImageContainer.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.mandelImageContainer.Location = new System.Drawing.Point(20, 145);
-            this.mandelImageContainer.Name = "mandelImageContainer";
-            this.mandelImageContainer.Size = new System.Drawing.Size(500, 459);
-            this.mandelImageContainer.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
-            this.mandelImageContainer.TabIndex = 1;
-            this.mandelImageContainer.TabStop = false;
-            this.mandelImageContainer.MouseDown += new System.Windows.Forms.MouseEventHandler(this.dragImageStart);
-            this.mandelImageContainer.MouseEnter += new System.EventHandler(this.setImageFocus);
-            this.mandelImageContainer.MouseMove += new System.Windows.Forms.MouseEventHandler(this.dragImage);
-            this.mandelImageContainer.MouseUp += new System.Windows.Forms.MouseEventHandler(this.dragImageEnd);
-            this.mandelImageContainer.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.setImageZoom);
-            // 
+            this.fractal.Paint += this.updateStatusBar;
+            this.fractal.Location = new Point(pxPadding, 25);
+            this.fractal.Size = this.calcFractalSize();
+            //
             // statusStrip
             // 
             this.statusStrip.AutoSize = false;
@@ -141,7 +114,7 @@ namespace Mandelbrot
             this.menuStripStartNew.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
             this.menuStripStartNew.Size = new System.Drawing.Size(218, 22);
             this.menuStripStartNew.Text = "Nieuw";
-            this.menuStripStartNew.Click += new System.EventHandler(this.resetImage);
+            this.menuStripStartNew.Click += new System.EventHandler(this.fractal.resetImage);
             // 
             // menuStripStartSave
             // 
@@ -184,29 +157,27 @@ namespace Mandelbrot
             // 
             // saveImageDialog
             // 
-            this.saveImageDialog.DefaultExt = "bmp";
+            this.saveImageDialog.DefaultExt = "png";
             this.saveImageDialog.FileName = "MandelBrot";
-            this.saveImageDialog.Filter = "Bitmap Afbeelding|*.bmp|JPeg Afbeelding|*.jpg|Gif Afbeelding|*.gif";
+            this.saveImageDialog.Filter = "Bitmap Afbeelding|*.bmp|PNG Afbeelding|*.png|JPeg Afbeelding|*.jpg|Gif Afbeelding|*.gif";
             this.saveImageDialog.Title = "Afbeelding Opslaan";
             // 
             // MainWindow
             // 
-            this.AcceptButton = this.generateImageButton;
+            this.AcceptButton = this.fractal.AcceptButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(548, 644);
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.menuStrip);
-            this.Controls.Add(this.mandelImageContainer);
-            this.Controls.Add(this.input);
+            this.Controls.Add(this.fractal);
             this.MainMenuStrip = this.menuStrip;
-            this.MinimumSize = new System.Drawing.Size(556, 678);
+            this.MinimumSize = new System.Drawing.Size(this.fractal.MinimumSize.Width + 10, this.fractal.MinimumSize.Height + 30);
+            this.ResizeBegin += this.beginResize;
+            this.Resize += this.considerResize;
+            this.ResizeEnd += this.completeResize;
             this.Name = "MainWindow";
             this.Text = "Mandelbrot Generator";
-            this.ResizeBegin += new System.EventHandler(this.setResizeFlag);
-            this.ResizeEnd += new System.EventHandler(this.resizeImageContainer);
-            this.Resize += new System.EventHandler(this.tryResizeImageContainer);
-            ((System.ComponentModel.ISupportInitialize)(this.mandelImageContainer)).EndInit();
             this.statusStrip.ResumeLayout(false);
             this.statusStrip.PerformLayout();
             this.menuStrip.ResumeLayout(false);
@@ -216,9 +187,7 @@ namespace Mandelbrot
 
         }
 
-        private Button generateImageButton;
-        private PictureBox mandelImageContainer;
-        
+        private FractalControl fractal;
         private StatusStrip statusStrip;
         private ToolStripStatusLabel statusStripTimeLabel;
         private ToolStripStatusLabel statusStripSizeLabel;
@@ -228,7 +197,6 @@ namespace Mandelbrot
         private ToolStripMenuItem menuStripStartSave;
         private ToolStripMenuItem menuStripStartExit;
         private SaveFileDialog saveImageDialog;
-        private InputSection input;
 
         private ToolStripMenuItem menuStripHelpList;
         private ToolStripMenuItem menuStripHelpInformation;
