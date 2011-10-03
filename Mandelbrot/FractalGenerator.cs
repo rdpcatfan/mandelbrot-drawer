@@ -140,7 +140,7 @@ namespace Mandelbrot
                 newImage.PixelFormat
             );
 
-            if (info.rxCentre + info.rScale == info.rxCentre) // Precision error
+            if (info.rScale < 1E-15) // Precision error
                 throw new Exception("Precision limit exceeded.");
             
             IList<PartInfo> parts;
