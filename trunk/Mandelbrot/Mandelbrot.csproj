@@ -67,6 +67,9 @@
     </Compile>
     <Compile Include="ImageCombination.cs" />
     <Compile Include="ImageInfo.cs" />
+    <Compile Include="InputSection.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="MainWindow.cs">
       <SubType>Form</SubType>
     </Compile>
