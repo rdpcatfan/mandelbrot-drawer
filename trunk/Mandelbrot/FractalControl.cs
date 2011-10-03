@@ -104,6 +104,7 @@ namespace Mandelbrot
             this.Controls.Add(this.input);
             this.Controls.Add(this.generateImageButton);
             this.Controls.Add(this.mandelImageContainer);
+            this.MinimumSize = new Size(this.input.MinimumWidth, this.input.MinimumHeight + pyButtonSize + 2 * pyInternalPadding + 100);
         }
 
 

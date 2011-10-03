@@ -35,7 +35,7 @@ namespace Mandelbrot
         private readonly Size standardLabelSize = new Size(60, 13);
         private readonly Size standardInputSize = new Size(100, 20);
         private const int pxInternalPadding = 10;
-        private const int pyInternalPadding = 5;
+        private const int pyInternalPadding = 8;
         private const int columns = 3;
         #endregion
 
@@ -93,6 +93,22 @@ namespace Mandelbrot
             set
             {
                 maxIterationsBox.Text = value.ToString();
+            }
+        }
+
+        public int MinimumWidth
+        {
+            get
+            {
+                return columns * Math.Max(standardLabelSize.Width, standardInputSize.Width) + (columns - 1) * pxInternalPadding;
+            }
+        }
+
+        public int MinimumHeight
+        {
+            get
+            {
+                return recommendedSize(MinimumWidth).Height;
             }
         }
 
@@ -198,7 +214,7 @@ namespace Mandelbrot
                 tempbox.TabIndex = tabindex++;
             }
 
-            this.Resize += layoutInputs;
+            this.Resize += makeLayout;
             this.OnResize(new EventArgs());
 
             foreach (Tuple<Control, Control> t in inputs.Values) // Typical example of where var is nice.
@@ -208,7 +224,7 @@ namespace Mandelbrot
             }
         }
 
-        private void layoutInputs(object sender, EventArgs e)
+        private void makeLayout(object sender, EventArgs e)
         {
             int pxStep, pyStep, pxStart, pyStart; // Distance between inputs and starting points.
             pxStart = 0;
@@ -229,9 +245,9 @@ namespace Mandelbrot
             {
                 t.Item1.Location = new Point(pxCurrent, pyCurrent);
                 if (doublerow)
-                    t.Item2.Location = new Point(pxCurrent + pxStep - t.Item2.Width, pyCurrent + t.Item1.Height);
+                    t.Item2.Location = new Point(pxCurrent + pxStep - t.Item2.Width, pyCurrent + t.Item1.Height + 2);
                 else
-                    t.Item2.Location = new Point(pxCurrent + t.Item1.Width, pyCurrent);
+                    t.Item2.Location = new Point(pxCurrent + t.Item1.Width + 2, pyCurrent);
                 if (currentRow % rows != 0)
                 {
                     pyCurrent += pyStep;

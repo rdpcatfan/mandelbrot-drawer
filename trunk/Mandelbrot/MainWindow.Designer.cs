@@ -169,13 +169,13 @@ namespace Mandelbrot
             this.Controls.Add(this.menuStrip);
             this.Controls.Add(this.fractal);
             this.MainMenuStrip = this.menuStrip;
-            this.MinimumSize = new System.Drawing.Size(this.fractal.MinimumSize.Width + 10, this.fractal.MinimumSize.Height + 30);
             this.ResizeBegin += this.beginResize;
             this.Resize += this.considerResize;
             this.ResizeEnd += this.completeResize;
             this.Name = "MainWindow";
             this.Text = "Mandelbrot Generator";
             this.Size = new System.Drawing.Size(450, 600);
+            this.MinimumSize = new Size(this.fractal.MinimumSize.Width + pxPadding * 2, this.fractal.MinimumSize.Height + 100);
             this.statusStrip.ResumeLayout(false);
             this.statusStrip.PerformLayout();
             this.menuStrip.ResumeLayout(false);
