@@ -165,9 +165,6 @@ namespace Mandelbrot
             // MainWindow
             // 
             this.AcceptButton = this.fractal.AcceptButton;
-//            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-//            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(548, 644);
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.menuStrip);
             this.Controls.Add(this.fractal);
@@ -178,6 +175,7 @@ namespace Mandelbrot
             this.ResizeEnd += this.completeResize;
             this.Name = "MainWindow";
             this.Text = "Mandelbrot Generator";
+            this.Size = new System.Drawing.Size(450, 600);
             this.statusStrip.ResumeLayout(false);
             this.statusStrip.PerformLayout();
             this.menuStrip.ResumeLayout(false);

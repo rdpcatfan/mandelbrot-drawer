@@ -15,12 +15,12 @@ namespace Mandelbrot
     {
         #region member vars
         private const int pxPadding = 15;
-        #endregion
 
         /// <summary>
         /// Used for managing resize operations.
         /// </summary>
         bool resizeBeginTriggered = false;
+        #endregion
 
         #region constructors
         /// <summary>
@@ -32,6 +32,7 @@ namespace Mandelbrot
             InitializeComponent();
         }
         #endregion
+
 
         /// <summary>
         /// beginResize is fired in response to the ResizeBegin event of the main form.
@@ -64,11 +65,6 @@ namespace Mandelbrot
         {
             resizeBeginTriggered = false;
             this.fractal.Size = calcFractalSize();
-        }
-
-        private Size calcFractalSize()
-        {
-            return new Size(this.ClientSize.Width - pxPadding * 2, this.ClientSize.Height - 50); 
         }
 
         /// <summary>
@@ -134,6 +130,11 @@ namespace Mandelbrot
         {
             statusStripSizeLabel.Text = "Afmetingen: " + this.fractal.Image.Width + " x " + this.fractal.Image.Height;
             this.statusStripTimeLabel.Text = "Gegenereerd in: " + this.fractal.GenerationTime.TotalMilliseconds.ToString("0") + " ms";
+        }
+
+        private Size calcFractalSize()
+        {
+            return new Size(this.ClientSize.Width - pxPadding * 2, this.ClientSize.Height - 60);
         }
     }
 }
