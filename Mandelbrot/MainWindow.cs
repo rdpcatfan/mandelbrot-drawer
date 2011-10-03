@@ -289,6 +289,14 @@ namespace Mandelbrot
             AboutBox about = new AboutBox();
             about.ShowDialog();
         }
+
+        private void openHelpForm(object sender, EventArgs e)
+        {
+            HelpForm help = new HelpForm();
+            help.Show();
+        }
         #endregion
+
+
     }
 }

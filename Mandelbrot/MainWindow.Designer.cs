@@ -44,6 +44,8 @@
             this.menuStripStartSave = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStripStartExit = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStripHelpList = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuStripHelpInformation = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuStripHelpAbout = new System.Windows.Forms.ToolStripMenuItem();
             this.saveImageDialog = new System.Windows.Forms.SaveFileDialog();
             this.colourChoiceLabel = new System.Windows.Forms.Label();
             this.colourChoiceComboBox = new System.Windows.Forms.ComboBox();
@@ -55,8 +57,6 @@
             this.scaleTextBox = new Mandelbrot.DoubleBox();
             this.centreYTextBox = new Mandelbrot.DoubleBox();
             this.centreXTextBox = new Mandelbrot.DoubleBox();
-            this.menuStripHelpInformation = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuStripHelpAbout = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.mandelImageContainer)).BeginInit();
             this.statusStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
@@ -223,6 +223,21 @@
             this.menuStripHelpList.Size = new System.Drawing.Size(44, 19);
             this.menuStripHelpList.Text = "Help";
             // 
+            // menuStripHelpInformation
+            // 
+            this.menuStripHelpInformation.Name = "menuStripHelpInformation";
+            this.menuStripHelpInformation.ShortcutKeys = System.Windows.Forms.Keys.F1;
+            this.menuStripHelpInformation.Size = new System.Drawing.Size(238, 22);
+            this.menuStripHelpInformation.Text = "Mandelbrot Generator Help";
+            this.menuStripHelpInformation.Click += new System.EventHandler(this.openHelpForm);
+            // 
+            // menuStripHelpAbout
+            // 
+            this.menuStripHelpAbout.Name = "menuStripHelpAbout";
+            this.menuStripHelpAbout.Size = new System.Drawing.Size(238, 22);
+            this.menuStripHelpAbout.Text = "Over Mandelbrot Generator";
+            this.menuStripHelpAbout.Click += new System.EventHandler(this.openAboutBox);
+            // 
             // saveImageDialog
             // 
             this.saveImageDialog.DefaultExt = "bmp";
@@ -315,19 +330,6 @@
             this.centreXTextBox.Size = new System.Drawing.Size(114, 20);
             this.centreXTextBox.TabIndex = 3;
             this.centreXTextBox.Text = "0.0";
-            // 
-            // menuStripHelpInformation
-            // 
-            this.menuStripHelpInformation.Name = "menuStripHelpInformation";
-            this.menuStripHelpInformation.Size = new System.Drawing.Size(219, 22);
-            this.menuStripHelpInformation.Text = "Mandelbrot Generator Help";
-            // 
-            // menuStripHelpAbout
-            // 
-            this.menuStripHelpAbout.Name = "menuStripHelpAbout";
-            this.menuStripHelpAbout.Size = new System.Drawing.Size(219, 22);
-            this.menuStripHelpAbout.Text = "Over Mandelbrot Generator";
-            this.menuStripHelpAbout.Click += new System.EventHandler(this.openAboutBox);
             // 
             // MainWindow
             // 
