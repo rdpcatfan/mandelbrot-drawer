@@ -54,6 +54,12 @@
     <Compile Include="AboutBox.Designer.cs">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="ColourChoice.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ColourMixer.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="ColourPalette.cs" />
     <Compile Include="ConvergenceCheckResult.cs" />
     <Compile Include="DoubleBox.cs">
