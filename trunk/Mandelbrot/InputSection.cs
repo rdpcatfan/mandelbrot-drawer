@@ -40,6 +40,14 @@ namespace Mandelbrot
         #endregion
 
         #region public properties
+        public bool doublerow
+        {
+            get
+            {
+                return this.isDoubleRowAt(this.Size.Width);
+            }
+        }
+
         public double rxCentre
         {
             get
@@ -97,15 +105,6 @@ namespace Mandelbrot
             set
             {
                 colourChoiceBox.SelectedItem = value;
-            }
-        }
-
-        public override Size MinimumSize
-        {
-            get
-            {
-                int pxMinimum = columns * Math.Max(standardInputSize.Width, standardLabelSize.Width) + (columns - 1) * pxInternalPadding;
-                return new Size(pxMinimum, 100);
             }
         }
         #endregion
@@ -211,10 +210,6 @@ namespace Mandelbrot
 
         private void layoutInputs(object sender, EventArgs e)
         {
-            // True if the window is rather narrow
-            bool doublerow =
-                columns * (standardInputSize.Width + standardLabelSize.Width) +
-                (columns - 1) * pxInternalPadding > this.Size.Width;
             int pxStep, pyStep, pxStart, pyStart; // Distance between inputs and starting points.
             pxStart = 0;
             pyStart = 0;
@@ -249,6 +244,26 @@ namespace Mandelbrot
                     currentRow = 1; // Not necessary, as modulo is cyclical anyway, but easier to debug.
                 }
             }
+        }
+
+        private bool isDoubleRowAt(int width)
+        {
+            return columns * (standardInputSize.Width + standardLabelSize.Width) +
+                (columns - 1) * pxInternalPadding > width;
+        }
+
+        /// <summary>
+        /// Return the recommended size setting for the given width.
+        /// </summary>
+        /// <param name="width">Width to be used.</param>
+        /// <returns></returns>
+        public Size recommendedSize(int width)
+        {
+            int rows = (int)Math.Ceiling(inputs.Values.Count / (double)columns);
+            if (isDoubleRowAt(width))
+                return new Size(width, rows * (standardLabelSize.Height + standardInputSize.Height + pyInternalPadding));
+            else
+                return new Size(width, rows * (Math.Max(standardLabelSize.Height, standardInputSize.Height) + pyInternalPadding));
         }
     }
 }
