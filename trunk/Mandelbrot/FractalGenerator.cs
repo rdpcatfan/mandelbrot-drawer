@@ -97,7 +97,6 @@ namespace Mandelbrot
         #endregion
 
         #region constructors
-
         /// <summary>
         /// Initialise the fractalGenerator generator.  Ensure that there's no way that
         /// it may seem like copying from the previous image would be a good
@@ -110,7 +109,6 @@ namespace Mandelbrot
         #endregion
 
         #region abstract functions
-
         /// <summary>
         /// Check whether point (x, y) escapes in no more than iMax
         /// iterations.  Return the coordinates reached when it escapes, and
@@ -119,11 +117,9 @@ namespace Mandelbrot
         /// performed.
         /// </summary>
         protected abstract ConvergenceCheckResult checkConvergence(double rxPoint, double ryPoint, int iMax);
-
         #endregion
 
-        #region public functions
-
+        #region public methods
         /// <summary>
         /// Generate and return an image that corresponds to the passed info.
         /// </summary>
@@ -163,8 +159,7 @@ namespace Mandelbrot
         }
         #endregion
 
-        #region private functions
-
+        #region private methods
         /// <summary>
         /// Split the image surface into several parts, with each part
         /// containing all the necessary information to render it. 
@@ -325,12 +320,10 @@ namespace Mandelbrot
             this.lastImage.UnlockBits(oldImageData);
         }
 
-        /* Given the coordinates of a point and the number of iterations
-         * necessary to reach it, return the colour that that pixel should
-         * be given.
-         */
         /// <summary>
-        /// 
+        /// Given the coordinates of a point and the number of iterations
+        /// necessary to reach it, return the colour that that pixel should
+        /// be given.
         /// </summary>
         /// <param name="res"></param>
         /// <returns></returns>
@@ -343,7 +336,6 @@ namespace Mandelbrot
             int colourInt1 = (int)v & 0x1FF;
             return palette[colourInt1];
         }
-
         #endregion
     }
 }
