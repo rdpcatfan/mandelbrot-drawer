@@ -14,6 +14,9 @@ namespace Mandelbrot
     public partial class MainWindow : Form
     {
         #region member vars
+        /// <summary>
+        /// Amount of horizontal padding on the sides of the fractal control.
+        /// </summary>
         private const int pxPadding = 15;
 
         /// <summary>
@@ -33,7 +36,7 @@ namespace Mandelbrot
         }
         #endregion
 
-
+        #region events
         /// <summary>
         /// beginResize is fired in response to the ResizeBegin event of the main form.
         /// ResizeBegin fires once when the border of the form is dragged. 
@@ -126,15 +129,24 @@ namespace Mandelbrot
             help.Show();
         }
 
+        /// <summary>
+        /// React to a change in the image by updating the status bar.
+        /// </summary>
         private void updateStatusBar(object sender, EventArgs e)
         {
             statusStripSizeLabel.Text = "Afmetingen: " + this.fractal.Image.Width + " x " + this.fractal.Image.Height;
             this.statusStripTimeLabel.Text = "Gegenereerd in: " + this.fractal.GenerationTime.TotalMilliseconds.ToString("0") + " ms";
         }
+        #endregion
 
+        #region private methods
+        /// <summary>
+        /// Calculate the size necessary for the fractal control.
+        /// </summary>
         private Size calcFractalSize()
         {
             return new Size(this.ClientSize.Width - pxPadding * 2, this.ClientSize.Height - 60);
         }
+        #endregion
     }
 }

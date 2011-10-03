@@ -7,6 +7,10 @@ using System.Text;
 
 namespace Mandelbrot
 {
+    /// <summary>
+    /// Control for manipulating and displaying the image of the Mandelbrot
+    /// Set.
+    /// </summary>
     class FractalControl : UserControl
     {
         #region member variables
@@ -42,7 +46,9 @@ namespace Mandelbrot
         /// Holds the current mouse position in an image drag operation.
         /// </summary>
         Point mouseDownPosition, dragPosition;
+        #endregion
 
+        #region properties
         public int pxImage { get; private set; }
         public int pyImage { get; private set; }
         public TimeSpan GenerationTime { get; private set; }
@@ -59,6 +65,10 @@ namespace Mandelbrot
         }
         #endregion
 
+        #region constructors
+        /// <summary>
+        /// Construct and initialise a fractal control.
+        /// </summary>
         public FractalControl()
         {
             this.colours = new Dictionary<string, ColourPalette>();
@@ -68,9 +78,14 @@ namespace Mandelbrot
 
             this.fractalGenerator = new MandelbrotGenerator();
             this.InitializeComponents();
-            this.Invalidate();
         }
 
+        /// <summary>
+        /// Initialize the graphical user interface.
+        /// </summary>
+        /// <remarks>
+        /// Listed as a constructor because it should only ever be called when constructing.
+        /// </remarks>
         private void InitializeComponents()
         {
             this.input = new InputSection(colours.Keys);
@@ -106,13 +121,13 @@ namespace Mandelbrot
             this.Controls.Add(this.mandelImageContainer);
             this.MinimumSize = new Size(this.input.MinimumWidth, this.input.MinimumHeight + pyButtonSize + 2 * pyInternalPadding + 100);
         }
+        #endregion
 
-
-        #region public functions
+        #region events
         /// <summary>
         /// Resets the image to the default starting position, scale and iterations.
         /// </summary>
-        public void resetImage(object sender = null, EventArgs e = null)
+        public void resetImage(object sender, EventArgs e)
         {
             this.input.rxCentre = 0.0;
             this.input.ryCentre = 0.0;
@@ -120,9 +135,7 @@ namespace Mandelbrot
             this.input.iMax = 500;
             this.Invalidate();
         }
-        #endregion
 
-        #region events
         /// <summary>
         /// Generate and render the fractalGenerator.
         /// </summary>
@@ -134,23 +147,35 @@ namespace Mandelbrot
         private void generateFractal(object sender, EventArgs e)
         {
             DateTime start = DateTime.Now;  // Poor man's timer
-            this.mandelImageContainer.Image = fractalGenerator.generate(
-                new ImageInfo(this.mandelImageContainer.Width,
-                this.mandelImageContainer.Height,
-                this.input.rxCentre,
-                this.input.ryCentre,
-                this.input.rScale,
-                this.input.iMax,
-                this.colours[this.input.colourSchemeName])
-            );
-            // Note that the timer has a resolution of around 15 ms -- this is
-            // good enough for testing, but it's probably best to get something
-            // more accurate for displaying it to the user.
-            //
-            // Also, the precision of timerLabel varies rather greatly, there
-            // should be some way to nail it to two decimals, or something
-            // around that.
-            this.GenerationTime = DateTime.Now - start;
+            try
+            {
+                this.mandelImageContainer.Image = fractalGenerator.generate(
+                    new ImageInfo(this.mandelImageContainer.Width,
+                    this.mandelImageContainer.Height,
+                    this.input.rxCentre,
+                    this.input.ryCentre,
+                    this.input.rScale,
+                    this.input.iMax,
+                    this.colours[this.input.colourSchemeName])
+                );
+            }
+            catch (Exception exc)
+            {
+                Graphics gr = this.mandelImageContainer.CreateGraphics();
+                gr.FillRectangle(Brushes.Black, this.mandelImageContainer.ClientRectangle);
+                gr.DrawString(exc.Message, new Font("Arial", 16), Brushes.White, new PointF(0, 0));
+            }
+            finally
+            {
+                // Note that the timer has a resolution of around 15 ms -- this is
+                // good enough for testing, but it's probably best to get something
+                // more accurate for displaying it to the user.
+                //
+                // Also, the precision of timerLabel varies rather greatly, there
+                // should be some way to nail it to two decimals, or something
+                // around that.
+                this.GenerationTime = DateTime.Now - start;
+            }
         }
 
         /// <summary>
