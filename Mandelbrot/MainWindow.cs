@@ -83,10 +83,10 @@ namespace Mandelbrot
             this.mandelImageContainer.Image = fractal.generate(
                 new ImageInfo(this.mandelImageContainer.Width,
                 this.mandelImageContainer.Height,
-                this.centreXTextBox.Double,
-                this.centreYTextBox.Double,
-                this.scaleTextBox.Double,
-                Int32.Parse(maxIterationsTextBox.Text),
+                this.input.rxCentre,
+                this.input.ryCentre,
+                this.input.rScale,
+                this.input.iMax,
                 this.colours["Default"])
             );
             // Note that the timer has a resolution of around 15 ms -- this is
@@ -131,9 +131,9 @@ namespace Mandelbrot
         {
             int zoom = e.Delta;  // Distance scrolled, in steps of 120.
             if (zoom > 0)  // Scroll in, thus decrease the rScale.
-                scaleTextBox.Double /= (1 + zoom / 120.0);
+                this.input.rScale /= (1 + zoom / 120.0);
             else  // Scroll out, thus increase the rScale.
-                scaleTextBox.Double *= (1 - zoom / 120.0);
+                this.input.rScale *= (1 - zoom / 120.0);
             this.generateFractal();
         }
 
@@ -155,9 +155,9 @@ namespace Mandelbrot
         {
             if (e.Button == MouseButtons.Left)
             {
-                double rScale = this.scaleTextBox.Double;
-                this.centreXTextBox.Double += (dragPosition.X - e.X) * rScale;
-                this.centreYTextBox.Double -= (dragPosition.Y - e.Y) * rScale;
+                double rScale = this.input.rScale;
+                this.input.rxCentre += (dragPosition.X - e.X) * rScale;
+                this.input.ryCentre -= (dragPosition.Y - e.Y) * rScale;
                 dragPosition = new Point(e.X, e.Y);
                 generateFractal();
             }
@@ -175,7 +175,7 @@ namespace Mandelbrot
                 /* As accessing this.scaleTextBox.Double is a fairly expensive
                  * operation, we'll save the value.
                  */
-                double rScale = this.scaleTextBox.Double;
+                double rScale = this.input.rScale;
                 /* The following two lines calculate the distance between the old
                  * centre and the new centre on the screen, and then convert that
                  * to the difference in the value.
@@ -183,8 +183,8 @@ namespace Mandelbrot
                  * Note the difference in the calculation of Y:  the rational
                  * can be found in FractalGenerator.cs.
                  */
-                centreXTextBox.Double += (e.X - mandelImageContainer.Size.Width / 2) * rScale;
-                centreYTextBox.Double -= (e.Y - mandelImageContainer.Size.Height / 2) * rScale;
+                this.input.rxCentre += (e.X - mandelImageContainer.Size.Width / 2) * rScale;
+                this.input.ryCentre -= (e.Y - mandelImageContainer.Size.Height / 2) * rScale;
                 this.generateFractal();
             }
         }
@@ -208,7 +208,7 @@ namespace Mandelbrot
         /// </summary>
         private void tryResizeImageContainer(object sender, EventArgs e)
         {
-            statusStripSizeLabel.Text = "Afmetingen: " + this.mandelImageContainer + " x " + this.mandelImageContainer;
+            statusStripSizeLabel.Text = "Afmetingen: " + this.mandelImageContainer.Width + " x " + this.mandelImageContainer.Height;
             if (!resizeBeginTriggered)
                 setImageContainerSize();
         }
@@ -229,6 +229,7 @@ namespace Mandelbrot
         /// </summary>
         private void setImageContainerSize()
         {
+            this.input.Size = new Size(this.ClientSize.Width - 30, 300);
             mandelImageContainer.Size = new Size(this.ClientSize.Width - 40, this.ClientSize.Height - 180);
             this.generateFractal();
         }
@@ -238,10 +239,11 @@ namespace Mandelbrot
         /// </summary>
         private void resetImage(object sender, EventArgs e)
         {
-            centreXTextBox.Double = 0.0;
-            centreYTextBox.Double = 0.0;
-            scaleTextBox.Double = 0.01;
-            maxIterationsTextBox.Text = "500";
+            this.input.rxCentre = 0.0;
+            this.input.ryCentre = 0.0;
+            this.input.rScale = 0.01;
+            this.input.iMax = 500;
+            this.input.colourSchemeName = "Default";
             generateFractal();
         }
 
@@ -296,7 +298,5 @@ namespace Mandelbrot
             help.Show();
         }
         #endregion
-
-
     }
 }
