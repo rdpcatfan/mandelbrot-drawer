@@ -35,14 +35,14 @@ namespace Mandelbrot
          * - ints vs doubles
          *
          *   When generating the image, there are two kinds of values: those
-         *   of the Image (the width, height, etc) and those of the fractal
+         *   of the Image (the width, height, etc) and those of the fractalGenerator
          *   (coordinates, etc).  In order to avoid mistakes, the following
          *   convention should be used:
          *
          *   Unless mentioned otherwise:
          *    p - All values that refer to the image, and are therefore a
          *        count of pixels, should be prefixed with a p.
-         *    r - All values that refer to the fractal, and are therefore
+         *    r - All values that refer to the fractalGenerator, and are therefore
          *        supposed to be real numbers, should be prefixed with an r.
          *    i - All values that refer to a number of iterations should
          *        be prefixed with an i.
@@ -60,7 +60,7 @@ namespace Mandelbrot
          * - Width and Height
          *
          *   All values that represent a horizontal distance, whether they
-         *   refer to the image or the fractal, should be prefixed with an
+         *   refer to the image or the fractalGenerator, should be prefixed with an
          *   `x', and all values that represent a vertical distance should
          *   be prefixed with a `y'.  This prefix goes after the `p' or 'r'
          *   mentioned above.  A value with an `i' prefix may not also have
@@ -99,7 +99,7 @@ namespace Mandelbrot
         #region constructors
 
         /// <summary>
-        /// Initialise the fractal generator.  Ensure that there's no way that
+        /// Initialise the fractalGenerator generator.  Ensure that there's no way that
         /// it may seem like copying from the previous image would be a good
         /// idea (there is no previous image).
         /// </summary>
