@@ -245,6 +245,7 @@ namespace Mandelbrot
                         this.CurrentPalette = tempchoice.Palette;
                     else
                         this.CurrentPalette = this.colours[this.colourSchemeName];
+                    this.Invalidate(); // Easy way of notifying that the fractal must be redrawn
                 };
 
                 tempchoice.Size = standardInputSize;
@@ -252,6 +253,7 @@ namespace Mandelbrot
                 {
                     tempcbox.Checked = true;
                     this.CurrentPalette = tempchoice.Palette;
+                    this.Invalidate(); // Easy way of notifying that the fractal must be redrawn
                 };
                 tempchoice.TabIndex = tabindex++;
             }
