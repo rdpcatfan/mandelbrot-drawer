@@ -25,12 +25,13 @@ namespace Mandelbrot
         private IDictionary<inputNames, Tuple<Control, Control>> inputs;
         ICollection<string> validSchemeNames;
 
-        private CheckBox ownColourBox;
         private ComboBox colourChoiceBox;
         private DoubleBox centreXBox;
         private DoubleBox centreYBox;
         private DoubleBox scaleBox;
         private TextBox maxIterationsBox;
+        private CheckBox ownColourBox;
+        private ColourChoice ownColourChoice;
 
         private readonly Size standardLabelSize = new Size(60, 13);
         private readonly Size standardInputSize = new Size(100, 20);

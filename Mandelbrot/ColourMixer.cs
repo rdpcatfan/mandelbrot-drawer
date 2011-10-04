@@ -34,6 +34,10 @@ namespace Mandelbrot
             {
                 return (byte)counters[b].Value;
             }
+            set
+            {
+                counters[b].Value = value;
+            }
         }
 
         public Color MixedColour
@@ -42,10 +46,20 @@ namespace Mandelbrot
             {
                 return Color.FromArgb(this[BaseColour.red] << 16 | this[BaseColour.green] << 8 | this[BaseColour.blue]);
             }
+            set
+            {
+                this[BaseColour.red] = value.R;
+                this[BaseColour.green] = value.G;
+                this[BaseColour.blue] = value.B;
+            }
         }
         #endregion
 
-        public ColourMixer()
+        #region events
+        public event EventHandler ColourChanged;
+        #endregion
+
+        public ColourMixer(Color c)
         {
             InitializeComponents();
         }
@@ -77,6 +91,11 @@ namespace Mandelbrot
                 tempCounter.Value = 0xFF;
                 tempCounter.Minimum = 0;
                 tempCounter.Maximum = 0xFF;
+                tempCounter.ValueChanged += (object o, EventArgs e) =>
+                {
+                    if (ColourChanged != null)
+                        ColourChanged(this, EventArgs.Empty);
+                };
                 this.counters[b] = tempCounter;
                 this.Controls.Add(tempCounter);
             }
