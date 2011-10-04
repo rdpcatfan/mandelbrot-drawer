@@ -143,7 +143,11 @@ namespace Mandelbrot
             this.colours = new Dictionary<string, ColourPalette>();
             this.colours["Default"] = new ColourPalette(Color.White, Color.Red, Color.Green, Color.Blue);
             this.colours["Forest"] = new ColourPalette(Color.MidnightBlue, Color.ForestGreen, Color.FloralWhite, Color.Gray);
+            this.colours["Fire"] = new ColourPalette(Color.Black, Color.DarkRed, Color.Orange, Color.WhiteSmoke);
+            this.colours["Royal"] = new ColourPalette(Color.DarkBlue, Color.Gold, Color.RoyalBlue, Color.WhiteSmoke);
             this.colours["Awful"] = new ColourPalette(Color.Chocolate, Color.Lime, Color.PeachPuff, Color.Purple);
+            this.colours["Death"] = new ColourPalette(Color.Black, Color.GhostWhite, Color.Firebrick, Color.Gray);
+            this.colours["Experimental"] = new ColourPalette(Color.Purple, Color.Yellow, Color.Green, Color.Orange);
 
             int tabindex = 0;
 

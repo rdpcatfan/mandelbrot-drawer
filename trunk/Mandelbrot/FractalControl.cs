@@ -86,7 +86,6 @@ namespace Mandelbrot
         /// </summary>
         public FractalControl()
         {
-
             this.fractalGenerator = new MandelbrotGenerator();
             this.InitializeComponents();
         }
