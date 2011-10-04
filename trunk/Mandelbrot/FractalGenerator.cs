@@ -69,12 +69,7 @@ namespace Mandelbrot
         /// A suitably large value that should be returned when a point does
         /// not converge.
         /// </summary>
-        protected const int iInfinity = 9001;
-
-        /// <summary>
-        /// An even larger value that may be used for testing purposes.
-        /// </summary>
-        protected const int iInfinityPlusOne = 9002;
+        protected const int iInfinity = 900001;
 
         ///<summary>
         ///Information used to generate the previous image.
@@ -133,6 +128,9 @@ namespace Mandelbrot
 
             if (info.rScale < 1E-15) // Precision error
                 throw new Exception("Limiet schaal overschreden");
+
+            if (info.iMax < 1)
+                throw new Exception("Aantal iteraties moet positief zijn");
             
             IList<PartInfo> parts;
             
