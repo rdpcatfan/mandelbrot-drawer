@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Drawing.Imaging;
 
 namespace Mandelbrot
 {
@@ -156,9 +157,33 @@ namespace Mandelbrot
             }
             catch (Exception exc)
             {
+                ImageAttributes imageAttributes = new ImageAttributes();
+                Image image = this.mandelImageContainer.Image;
                 Graphics gr = this.mandelImageContainer.CreateGraphics();
-                gr.FillRectangle(Brushes.Black, this.mandelImageContainer.ClientRectangle);
-                gr.DrawString(exc.Message, new Font("Arial", 16), Brushes.White, new PointF(0, 0));
+
+                float[][] colorMatrixElements = {   new float[]{0.1f, 0.1f, 0.1f, 0, 0},
+                                                    new float[]{0.1f, 0.1f, 0.1f, 0, 0},
+                                                    new float[]{0.1f, 0.1f, 0.1f, 0, 0},
+                                                    new float[]{0, 0, 0, 1, 0},
+                                                    new float[]{0, 0, 0, 0, 1}
+                                                };
+                ColorMatrix colorMatrix = new ColorMatrix(colorMatrixElements);
+
+                imageAttributes.SetColorMatrix(colorMatrix, ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
+
+                Rectangle containerSize = this.mandelImageContainer.ClientRectangle;
+                Rectangle imageSize = new Rectangle(new Point((containerSize.Width - image.Width) / 2, (containerSize.Height - image.Height) / 2), image.Size);
+
+                gr.DrawImage(image,
+                   imageSize,
+                   0, 0,
+                   imageSize.Width,
+                   imageSize.Height,
+                   GraphicsUnit.Pixel,
+                   imageAttributes);
+
+                string errorText = "Er is een probleem opgetreden:\r\n\r\n" + exc.Message;
+                gr.DrawString(errorText, new Font("Arial", 16), Brushes.White, containerSize.Width / 2 - 160, containerSize.Height / 2 - 40);
             }
             finally
             {

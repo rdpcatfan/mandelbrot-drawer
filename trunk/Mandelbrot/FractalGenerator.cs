@@ -137,7 +137,7 @@ namespace Mandelbrot
             );
 
             if (info.rScale < 1E-15) // Precision error
-                throw new Exception("Precision limit exceeded.");
+                throw new Exception("Limiet schaal overschreden");
             
             IList<PartInfo> parts;
             
