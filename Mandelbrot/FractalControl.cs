@@ -40,8 +40,6 @@ namespace Mandelbrot
         /// </summary>
         IFractalGenerator fractalGenerator;
 
-        IDictionary<string, ColourPalette> colours;
-
         /// <summary>
         /// Holds the current mouse position in an image drag operation.
         /// </summary>
@@ -71,10 +69,6 @@ namespace Mandelbrot
         /// </summary>
         public FractalControl()
         {
-            this.colours = new Dictionary<string, ColourPalette>();
-            this.colours["Default"] = new ColourPalette(Color.White, Color.Red, Color.Green, Color.Blue);
-            this.colours["Forest"] = new ColourPalette(Color.MidnightBlue, Color.ForestGreen, Color.FloralWhite, Color.Gray);
-            this.colours["Awful"] = new ColourPalette(Color.Chocolate, Color.Lime, Color.PeachPuff, Color.Purple);
 
             this.fractalGenerator = new MandelbrotGenerator();
             this.InitializeComponents();
@@ -88,7 +82,7 @@ namespace Mandelbrot
         /// </remarks>
         private void InitializeComponents()
         {
-            this.input = new InputSection(colours.Keys);
+            this.input = new InputSection();
             this.generateImageButton = new Button();
             this.mandelImageContainer = new PictureBox();
 
@@ -156,7 +150,7 @@ namespace Mandelbrot
                     this.input.ryCentre,
                     this.input.rScale,
                     this.input.iMax,
-                    this.colours[this.input.colourSchemeName])
+                    this.input.CurrentPalette)
                 );
             }
             catch (Exception exc)

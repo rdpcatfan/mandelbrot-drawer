@@ -28,9 +28,14 @@ namespace Mandelbrot
         }
         #endregion
 
+        #region events
+        public event EventHandler ColourChanged;
+        #endregion
+
         public ColourBox(Color c)
         {
             this._colour = c;
+            this.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.Paint += (object o, PaintEventArgs e) =>
             {
                 using (Brush br = new SolidBrush(this.Colour))
@@ -45,7 +50,12 @@ namespace Mandelbrot
         private void makeMixer(object o, EventArgs ea)
         {
             ColourMixer mixer = new ColourMixer(this.Colour);
-            mixer.ColourChanged += (object p, EventArgs e) => this.Colour = mixer.MixedColour;
+            mixer.ColourChanged += (object p, EventArgs e) =>
+            {
+                this.Colour = mixer.MixedColour;
+                if (this.ColourChanged != null)
+                    ColourChanged(this, EventArgs.Empty);
+            };
             mixer.Show();
         }
         #endregion
