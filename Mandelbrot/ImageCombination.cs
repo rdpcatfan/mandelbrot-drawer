@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Drawing;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Diagnostics;
+using System.Drawing;
 
 namespace Mandelbrot
 {
@@ -75,31 +72,39 @@ namespace Mandelbrot
     /// </remarks>
     class ImageCombination
     {
+        #region member variables
         /// <summary>
         /// The horizontal size of the overlap in pixels.
         /// </summary>
         public readonly int pxSize;
+
         /// <summary>
         /// The vertical size of the overlap in pixels.
         /// </summary>
         public readonly int pySize;
+
         /// <summary>
         /// The leftmost point of the overlapping area in the source image.
         /// </summary>
         public readonly int pxBeginInSource;
+
         /// <summary>
         /// The topmost point of the overlapping area in the source image.
         /// </summary>
         public readonly int pyBeginInSource;
+
         /// <summary>
         /// The leftmost point of the overlapping area in the destination image.
         /// </summary>
         public readonly int pxBeginInDestination;
+
         /// <summary>
         /// The beginning x-coordinate of the overlapping area in the source image.
         /// </summary>
         public readonly int pyBeginInDestination;
-        
+        #endregion
+
+        #region properties
         /// <summary>
         /// Return a rectangle representing the overlap in the first image.
         /// </summary>
@@ -110,7 +115,9 @@ namespace Mandelbrot
                 return new Rectangle(pxBeginInDestination, pyBeginInDestination, pxSize, pySize);
             }
         }
+        #endregion
 
+        #region costructors
         /// <summary>
         /// Calculate the overlapping area of two images, in terms of the coordinates
         /// of each image and keep track of it.  The two images are treated equally,
@@ -141,7 +148,9 @@ namespace Mandelbrot
             this.pxSize = pxToBegin + pxToEnd;
             this.pySize = pyToBegin + pyToEnd;
         }
+        #endregion
 
+        #region public methods
         /// <summary>
         /// Check whether it's possible to map the first image to the second one.
         /// </summary>
@@ -157,5 +166,6 @@ namespace Mandelbrot
                 mapFrom.iMax == mapTo.iMax &&
                 mapFrom.palette == mapTo.palette;
         }
+        #endregion
     }
 }

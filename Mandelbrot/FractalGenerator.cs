@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Drawing;
-using System.Windows.Forms;
 using System.Drawing.Imaging;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Mandelbrot
@@ -32,7 +28,7 @@ namespace Mandelbrot
          *   explained when the issue is encountered.
          *
          *
-         * - ints vs doubles
+         * - Data types
          *
          *   When generating the image, there are two kinds of values: those
          *   of the Image (the width, height, etc) and those of the fractalGenerator
@@ -110,11 +106,10 @@ namespace Mandelbrot
 
         #region abstract functions
         /// <summary>
-        /// Check whether point (x, y) escapes in no more than iMax
-        /// iterations.  Return the coordinates reached when it escapes, and
-        /// the number of iteration taken to do so.  If the point does not
-        /// escape, return iInfinity and the coordinates at the last iteration
-        /// performed.
+        /// Check whether point escapes in no more than iMax iterations.  Return
+        /// the coordinates reached when it escapes, and the number of iteration
+        /// taken to do so.  If the point does not escape, return iInfinity and
+        /// the coordinates at the last iteration performed.
         /// </summary>
         protected abstract ConvergenceCheckResult checkConvergence(double rxPoint, double ryPoint, int iMax);
         #endregion

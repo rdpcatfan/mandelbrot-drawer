@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Mandelbrot
 {
@@ -38,6 +35,11 @@ namespace Mandelbrot
         public event EventHandler ColourChanged;
         #endregion
 
+        #region constructors
+        /// <summary>
+        /// Constuctor.
+        /// </summary>
+        /// <param name="c">Colour to initialise to.</param>
         public ColourBox(Color c)
         {
             this._colour = c;
@@ -49,11 +51,15 @@ namespace Mandelbrot
                     e.Graphics.FillRectangle(br, this.ClientRectangle);
                 }
             };
-            this.Click += makeMixer;
+            this.Click += makeColourChoiceDialog;
         }
+        #endregion
 
         #region event handlers
-        private void makeMixer(object o, EventArgs ea)
+        /// <summary>
+        /// Create a dialog for choosing the colour.
+        /// </summary>
+        private void makeColourChoiceDialog(object o, EventArgs ea)
         {
             ColorDialog dialog = new ColorDialog();
             dialog.AllowFullOpen = true;

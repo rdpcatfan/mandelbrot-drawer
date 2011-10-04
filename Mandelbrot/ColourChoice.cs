@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Windows.Forms;
-using System.Drawing;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace Mandelbrot
 {
@@ -16,10 +14,7 @@ namespace Mandelbrot
         private int pxPadding = 6;
         #endregion
 
-        #region events
-        public event EventHandler ColourChanged;
-        #endregion
-
+        #region parameters
         public ColourPalette Palette
         {
             get
@@ -27,7 +22,19 @@ namespace Mandelbrot
                 return new ColourPalette(boxes[0].Colour, boxes[1].Colour, boxes[2].Colour, boxes[3].Colour);
             }
         }
+        #endregion
 
+        #region events
+        public event EventHandler ColourChanged;
+        #endregion
+
+        #region constructors
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <remarks>
+        /// Layout of subelements is done separately.
+        /// </remarks>
         public ColourChoice()
         {
             Color[] initialcolours = {Color.White, Color.Blue, Color.Red, Color.Black };
@@ -49,7 +56,14 @@ namespace Mandelbrot
             }
             this.Resize += this.handleResize;
         }
+        #endregion
 
+        #region event handlers
+        /// <summary>
+        /// Set positions and sizes of components.
+        /// </summary>
+        /// <param name="o"></param>
+        /// <param name="e"></param>
         private void handleResize(object o, EventArgs e)
         {
             int pxCurrent = 0;
@@ -60,5 +74,6 @@ namespace Mandelbrot
                 pxCurrent += this.Size.Height + pxPadding;
             }
         }
+        #endregion
     }
 }
