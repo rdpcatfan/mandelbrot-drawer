@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Drawing;
-using System.Windows.Forms;
-using System.Drawing.Imaging;
+﻿using System.Drawing;
 
 namespace Mandelbrot
 {
     interface IFractalGenerator
     {
+        /// <summary>
+        /// Generate an image of a fractal.
+        /// </summary>
+        /// <param name="info">Information for the generation of the image.</param>
+        /// <returns>The image generated</returns>
         Image generate(ImageInfo info);
     }
 }

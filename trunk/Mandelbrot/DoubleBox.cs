@@ -1,14 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
 using System.Globalization;
+using System.Windows.Forms;
 
 namespace Mandelbrot
 {
+    /// <summary>
+    /// Convenience class for a textbox that should have doubles
+    /// entered into it.
+    /// </summary>
     class DoubleBox : TextBox
     {
+        #region properties
         public double Double
         {
             get
@@ -30,5 +32,6 @@ namespace Mandelbrot
                 base.Text = value.ToString();
             }
         }
+        #endregion
     }
 }

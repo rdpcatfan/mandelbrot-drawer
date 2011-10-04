@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Windows.Forms;
 using System.Drawing;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Drawing.Imaging;
+using System.Windows.Forms;
 
 namespace Mandelbrot
 {
@@ -208,6 +205,12 @@ namespace Mandelbrot
             }
         }
 
+        /// <summary>
+        /// Return the image to the original position.
+        /// </summary>
+        /// <remarks>
+        /// Does not reset the colour scheme.
+        /// </remarks>
         public void resetImage(object sender, EventArgs e)
         {
             this.input.rxCentre = 0.0;
@@ -290,8 +293,8 @@ namespace Mandelbrot
                  */
                 this.input.rxCentre += (e.X - mandelImageContainer.Size.Width / 2) * rScale;
                 this.input.ryCentre -= (e.Y - mandelImageContainer.Size.Height / 2) * rScale;
+                this.generateFractal();
             }
-            this.generateFractal();
         }
 
         /// <summary>

@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Mandelbrot
@@ -35,8 +32,8 @@ namespace Mandelbrot
 
         public ColourPalette CurrentPalette;
 
-        private readonly Size standardLabelSize = new Size(85, 18);
-        private readonly Size standardInputSize = new Size(100, 18);
+        private static readonly Size standardLabelSize = new Size(85, 18);
+        private static readonly Size standardInputSize = new Size(100, 18);
         private const int pxInternalPadding = 10;
         private const int pyInternalPadding = 8;
         private const int columns = 3;
@@ -47,7 +44,7 @@ namespace Mandelbrot
         {
             get
             {
-                return this.isDoubleRowAt(this.Size.Width);
+                return InputSection.isDoubleRowAt(this.Size.Width);
             }
         }
 
@@ -128,12 +125,19 @@ namespace Mandelbrot
         }
         #endregion
 
+        #region constructors
         public InputSection()
         {
             this.inputs = new Dictionary<inputNames, Tuple<Control, Control>>();
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Initialise the graphical user interface.
+        /// </summary>
+        /// <remarks>
+        /// Placed in constructors as it should only be called from the constructor.
+        /// </remarks>
         private void InitializeComponent()
         {
             this.colours = new Dictionary<string, ColourPalette>();
@@ -267,7 +271,27 @@ namespace Mandelbrot
                 this.Controls.Add(t.Item2);
             }
         }
+        #endregion
 
+        #region public methods
+        /// <summary>
+        /// Return the recommended size setting for the given width.
+        /// </summary>
+        /// <param name="width">Width to be used.</param>
+        public Size recommendedSize(int width)
+        {
+            int rows = (int)Math.Ceiling(inputs.Values.Count / (double)columns);
+            if (isDoubleRowAt(width))
+                return new Size(width, rows * (standardLabelSize.Height + standardInputSize.Height + pyInternalPadding));
+            else
+                return new Size(width, rows * (Math.Max(standardLabelSize.Height, standardInputSize.Height) + pyInternalPadding));
+        }
+        #endregion
+
+        #region event handlers
+        /// <summary>
+        /// Ensure all elements are laid out correctly.
+        /// </summary>
         private void makeLayout(object sender, EventArgs e)
         {
             int pxStep, pyStep, pxStart, pyStart; // Distance between inputs and starting points.
@@ -305,25 +329,17 @@ namespace Mandelbrot
                 }
             }
         }
+        #endregion
 
-        private bool isDoubleRowAt(int width)
+        #region static methods
+        /// <summary>
+        /// Check whether the layout is double-row at a given width.
+        /// </summary>
+        private static bool isDoubleRowAt(int width)
         {
             return columns * (standardInputSize.Width + standardLabelSize.Width) +
                 (columns - 1) * pxInternalPadding > width;
         }
-
-        /// <summary>
-        /// Return the recommended size setting for the given width.
-        /// </summary>
-        /// <param name="width">Width to be used.</param>
-        /// <returns></returns>
-        public Size recommendedSize(int width)
-        {
-            int rows = (int)Math.Ceiling(inputs.Values.Count / (double)columns);
-            if (isDoubleRowAt(width))
-                return new Size(width, rows * (standardLabelSize.Height + standardInputSize.Height + pyInternalPadding));
-            else
-                return new Size(width, rows * (Math.Max(standardLabelSize.Height, standardInputSize.Height) + pyInternalPadding));
-        }
+        #endregion
     }
 }

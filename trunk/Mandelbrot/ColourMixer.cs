@@ -1,12 +1,14 @@
 ﻿using System;
-using System.Windows.Forms;
-using System.Drawing;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace Mandelbrot
 {
+    /// <summary>
+    /// Deprecated class for selecting colours.  Has been replaced by
+    /// ColorDialog from the C# standard library.
+    /// </summary>
     class ColourMixer : Form
     {
         public enum BaseColour {
@@ -59,15 +61,22 @@ namespace Mandelbrot
         public event EventHandler ColourChanged;
         #endregion
 
+        #region constructors
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="c">Colour to be used by default.</param>
         public ColourMixer(Color c)
         {
             InitializeComponents();
             this.MixedColour = c;
         }
 
+        /// <summary>
+        /// Initialise the graphical components.
+        /// </summary>
         private void InitializeComponents()
         {
-
             counters = new Dictionary<BaseColour, NumericUpDown>();
             IDictionary<BaseColour, Tuple<string, NumericUpDown>> colours = new Dictionary<BaseColour, Tuple<string, NumericUpDown>>();
             colours[BaseColour.red] = new Tuple<string, NumericUpDown>("Rood:", new NumericUpDown());
@@ -119,5 +128,6 @@ namespace Mandelbrot
             this.Text = "Kleur Kiezer";
             this.Controls.Add(preview);
         }
+        #endregion
     }
 }
