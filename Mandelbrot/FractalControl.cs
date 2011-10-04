@@ -19,7 +19,11 @@ namespace Mandelbrot
         private Button generateImageButton;
         private PictureBox mandelImageContainer;
 
-        public IButtonControl AcceptButton;
+        /// <summary>
+        /// Keeps track of a button.  May be used by form classes to make the
+        /// user interface more convenient.
+        /// </summary>
+        public IButtonControl AcceptButton { get; private set; }
 
         private const int pyButtonSize = 25;
         private const int pyInternalPadding = 5;
@@ -48,9 +52,24 @@ namespace Mandelbrot
         #endregion
 
         #region properties
+        /// <summary>
+        /// Horizontal size of the image.
+        /// </summary>
         public int pxImage { get; private set; }
+
+        /// <summary>
+        /// Vertical size of the image.
+        /// </summary>
         public int pyImage { get; private set; }
+
+        /// <summary>
+        /// Duration it took to generate the last image.
+        /// </summary>
         public TimeSpan GenerationTime { get; private set; }
+
+        /// <summary>
+        /// The mandelbrot image itself.
+        /// </summary>
         public Image Image
         {
             get
@@ -110,7 +129,6 @@ namespace Mandelbrot
 
             this.input.Invalidated += this.generateFractal;
             this.Resize += this.sizeChanged;
-            this.Paint += this.generateFractal;
 
             this.Controls.Add(this.input);
             this.Controls.Add(this.generateImageButton);
@@ -119,18 +137,10 @@ namespace Mandelbrot
         }
         #endregion
 
-        #region events
+        #region event handlers
         /// <summary>
         /// Resets the image to the default starting position, scale and iterations.
         /// </summary>
-        public void resetImage(object sender, EventArgs e)
-        {
-            this.input.rxCentre = 0.0;
-            this.input.ryCentre = 0.0;
-            this.input.rScale = 0.01;
-            this.input.iMax = 500;
-            this.Invalidate();
-        }
 
         /// <summary>
         /// Generate and render the fractalGenerator.
@@ -140,7 +150,7 @@ namespace Mandelbrot
         /// the time taken.  Whether this is good design is questionable,
         /// but it is not significant enough of an issue to redesign.
         /// </remarks>
-        private void generateFractal(object sender, EventArgs e)
+        private void generateFractal(object o = null, EventArgs e = null)
         {
             DateTime start = DateTime.Now;  // Poor man's timer
             try
@@ -161,11 +171,11 @@ namespace Mandelbrot
                 Image image = this.mandelImageContainer.Image;
                 Graphics gr = this.mandelImageContainer.CreateGraphics();
 
-                float[][] colorMatrixElements = {   new float[]{0.1f, 0.1f, 0.1f, 0, 0},
-                                                    new float[]{0.1f, 0.1f, 0.1f, 0, 0},
-                                                    new float[]{0.1f, 0.1f, 0.1f, 0, 0},
-                                                    new float[]{0, 0, 0, 1, 0},
-                                                    new float[]{0, 0, 0, 0, 1}
+                float[][] colorMatrixElements = {   new float[]{0.1f, 0.1f, 0.1f,  0,  0},
+                                                    new float[]{0.1f, 0.1f, 0.1f,  0,  0},
+                                                    new float[]{0.1f, 0.1f, 0.1f,  0,  0},
+                                                    new float[]{  0 ,   0 ,   0 ,  1,  0},
+                                                    new float[]{  0 ,   0 ,   0 ,  0,  1}
                                                 };
                 ColorMatrix colorMatrix = new ColorMatrix(colorMatrixElements);
 
@@ -198,6 +208,15 @@ namespace Mandelbrot
             }
         }
 
+        public void resetImage(object sender, EventArgs e)
+        {
+            this.input.rxCentre = 0.0;
+            this.input.ryCentre = 0.0;
+            this.input.rScale = 0.01;
+            this.input.iMax = 500;
+            this.generateFractal();
+        }
+
         /// <summary>
         /// Ensure that the image always has focus if the mouse is above it.
         /// This must be done for the scroll functionality to be available, as a
@@ -220,7 +239,7 @@ namespace Mandelbrot
                 this.input.rScale /= (1 + zoom / 120.0);
             else  // Scroll out, thus increase the rScale.
                 this.input.rScale *= (1 - zoom / 120.0);
-            this.Invalidate();
+            this.generateFractal();
         }
 
         /// <summary>
@@ -245,7 +264,7 @@ namespace Mandelbrot
                 this.input.rxCentre += (dragPosition.X - e.X) * rScale;
                 this.input.ryCentre -= (dragPosition.Y - e.Y) * rScale;
                 dragPosition = new Point(e.X, e.Y);
-                this.Invalidate();
+                this.generateFractal();
             }
         }
 
@@ -271,8 +290,8 @@ namespace Mandelbrot
                  */
                 this.input.rxCentre += (e.X - mandelImageContainer.Size.Width / 2) * rScale;
                 this.input.ryCentre -= (e.Y - mandelImageContainer.Size.Height / 2) * rScale;
-                this.Invalidate();
             }
+            this.generateFractal();
         }
 
         /// <summary>
@@ -286,7 +305,7 @@ namespace Mandelbrot
             this.generateImageButton.Size = new Size(this.ClientSize.Width, pyButtonSize);
             this.mandelImageContainer.Location = new Point(0, this.generateImageButton.Location.Y + pyButtonSize + pyInternalPadding);
             this.mandelImageContainer.Size = new Size(this.ClientSize.Width, this.ClientSize.Height - this.input.Size.Height - pyButtonSize - pyInternalPadding * 2);
-            this.Invalidate();
+            this.generateFractal();
         }
         #endregion
     }

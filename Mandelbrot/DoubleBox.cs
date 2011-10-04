@@ -13,9 +13,17 @@ namespace Mandelbrot
         {
             get
             {
-                if (base.Text != "")
-                    return Double.Parse(base.Text.Replace(',', '.'), new CultureInfo("en-US").NumberFormat);
-                return 0D;
+                try
+                {
+                    if (base.Text != "")
+                        return Double.Parse(base.Text.Replace(',', '.'), new CultureInfo("en-US").NumberFormat);
+                    return 0.01;
+                }
+                catch(Exception exc)
+                {
+                    base.Text = (0.01).ToString();
+                    throw;
+                }
             }
             set
             {

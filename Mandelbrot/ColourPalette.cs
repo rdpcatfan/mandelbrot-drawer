@@ -62,13 +62,13 @@ namespace Mandelbrot
             return (int)(deltaR * (double)(i) / colourBands);
         }
 
-        /* Turn three values into a colour.
-         *
-         * The values should correspond to the red, green, and blue part
-         * respectively.  Bits above the 8th will be ignored, so the
-         * maximum meaningful value of r, g, and b is 255 each.
-         *
-         */ 
+        /// <summary>
+        /// Merge three ints (red, green, blue) into a single int (argb).
+        /// </summary>
+        /// <param name="r">Red</param>
+        /// <param name="g">Green</param>
+        /// <param name="b">Blue</param>
+        /// <returns></returns>
         private static Int32 int32FromRGB(int r, int g, int b)
         {
             return ((r & 0xFF) << 16) | ((g & 0xFF) << 8) | (b & 0xFF);
