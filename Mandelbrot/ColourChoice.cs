@@ -10,31 +10,36 @@ namespace Mandelbrot
     class ColourChoice : UserControl
     {
         #region member variables
-        private IList<PictureBox> colours;
+        IList<ColourBox> boxes;
 
-        private int NumberOfColours;
+        private int NumberOfColours = 4;
         private int pxPadding = 6;
         #endregion
 
         public ColourChoice()
         {
-            int pxCurrent = 0;
+            Color[] initialcolours = {Color.White, Color.Blue, Color.Red, Color.Black };
+            this.boxes = new List<ColourBox>();
             for (int i = 0; i < NumberOfColours; ++i)
             {
-                PictureBox tempbox = new PictureBox();
-                
-                tempbox.Size = new Size(this.Size.Height, this.Size.Height);
-                tempbox.Location = new Point(pxCurrent, 0);
-                pxCurrent += this.Size.Width + pxPadding;
+                ColourBox cbox = new ColourBox(initialcolours[i]);
 
-                Graphics gr = tempbox.CreateGraphics();
-                gr.FillRectangle(Brushes.White, tempbox.ClientRectangle);
+                // Position will be done later
 
-                tempbox.Click += (object o, EventArgs e) =>
-                {
-                };
-                
-                this.Controls.Add(tempbox);
+                this.boxes.Add(cbox);
+                this.Controls.Add(cbox);
+            }
+            this.handleResize(this, EventArgs.Empty);
+        }
+
+        private void handleResize(object o, EventArgs e)
+        {
+            int pxCurrent = 0;
+            foreach (ColourBox box in this.boxes)
+            {
+                box.Size = new Size(this.Size.Height, this.Size.Height);
+                box.Location = new Point(pxCurrent, 0);
+                pxCurrent += this.Size.Height + pxPadding;
             }
         }
     }

@@ -33,8 +33,8 @@ namespace Mandelbrot
         private CheckBox ownColourBox;
         private ColourChoice ownColourChoice;
 
-        private readonly Size standardLabelSize = new Size(60, 13);
-        private readonly Size standardInputSize = new Size(100, 20);
+        private readonly Size standardLabelSize = new Size(80, 13);
+        private readonly Size standardInputSize = new Size(100, 18);
         private const int pxInternalPadding = 10;
         private const int pyInternalPadding = 8;
         private const int columns = 3;
@@ -198,7 +198,7 @@ namespace Mandelbrot
                 tempbox.TabIndex = tabindex++;
             }
 
-            {   // colour choice
+            {   // colour cbox
                 Label templabel = new Label();
                 ComboBox tempbox = new ComboBox();
                 inputs[inputNames.colourChoice] = new Tuple<Control, Control>(templabel, tempbox);
@@ -213,6 +213,22 @@ namespace Mandelbrot
                 tempbox.Text = "Default";
                 tempbox.SelectedItem = "Default";
                 tempbox.TabIndex = tabindex++;
+            }
+
+            {   // own colour cbox
+                CheckBox tempcbox = new CheckBox();
+                ColourChoice tempchoice = new ColourChoice();
+                inputs[inputNames.ownColour] = new Tuple<Control, Control>(tempcbox, tempchoice);
+                this.ownColourBox = tempcbox;
+                this.ownColourChoice = tempchoice;
+
+                tempcbox.Text = "Eigen kleur:";
+                tempcbox.Size = standardLabelSize;
+                tempcbox.TextAlign = ContentAlignment.MiddleRight;
+                tempcbox.TabIndex = tabindex++;
+
+                tempchoice.Size = standardInputSize;
+                tempchoice.TabIndex = tabindex++;
             }
 
             this.Resize += makeLayout;

@@ -31,7 +31,7 @@ namespace Mandelbrot
         public ColourBox(Color c)
         {
             this._colour = c;
-            this.Paint += (object o, PaintEventArgs e) => // Because I feel like it.  Feel free to refactor.
+            this.Paint += (object o, PaintEventArgs e) =>
             {
                 using (Brush br = new SolidBrush(this.Colour))
                 {
@@ -46,6 +46,7 @@ namespace Mandelbrot
         {
             ColourMixer mixer = new ColourMixer(this.Colour);
             mixer.ColourChanged += (object p, EventArgs e) => this.Colour = mixer.MixedColour;
+            mixer.Show();
         }
         #endregion
     }
