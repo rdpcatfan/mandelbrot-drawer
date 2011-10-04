@@ -14,6 +14,9 @@ namespace Mandelbrot
         #endregion
 
         #region properties
+        /// <summary>
+        /// Colour currently selected and displayed.
+        /// </summary>
         public Color Colour
         {
             get
@@ -29,6 +32,9 @@ namespace Mandelbrot
         #endregion
 
         #region events
+        /// <summary>
+        /// Triggered when the colour is changed.
+        /// </summary>
         public event EventHandler ColourChanged;
         #endregion
 
@@ -49,14 +55,17 @@ namespace Mandelbrot
         #region event handlers
         private void makeMixer(object o, EventArgs ea)
         {
-            ColourMixer mixer = new ColourMixer(this.Colour);
-            mixer.ColourChanged += (object p, EventArgs e) =>
+            ColorDialog dialog = new ColorDialog();
+            dialog.AllowFullOpen = true;
+            dialog.ShowHelp = true;
+            dialog.Color = this.Colour;
+            if (dialog.ShowDialog() == DialogResult.OK)
             {
-                this.Colour = mixer.MixedColour;
+                this.Colour = dialog.Color;
                 if (this.ColourChanged != null)
                     ColourChanged(this, EventArgs.Empty);
-            };
-            mixer.Show();
+            }
+            // In other cases, do nothing
         }
         #endregion
     }

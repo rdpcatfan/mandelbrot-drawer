@@ -107,6 +107,7 @@ namespace Mandelbrot
             this.mandelImageContainer.MouseUp += this.dragImageEnd;
             this.mandelImageContainer.MouseWheel += this.setImageZoom;
 
+            this.input.Invalidated += this.generateFractal;
             this.Resize += this.sizeChanged;
             this.Paint += this.generateFractal;
 
