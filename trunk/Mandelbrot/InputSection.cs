@@ -23,7 +23,7 @@ namespace Mandelbrot
 
         #region member vars
         private IDictionary<inputNames, Tuple<Control, Control>> inputs;
-        ICollection<string> validSchemeNames;
+        IDictionary<string, ColourPalette> colours;
 
         private ComboBox colourChoiceBox;
         private DoubleBox centreXBox;
@@ -33,7 +33,9 @@ namespace Mandelbrot
         private CheckBox ownColourBox;
         private ColourChoice ownColourChoice;
 
-        private readonly Size standardLabelSize = new Size(80, 13);
+        public ColourPalette CurrentPalette;
+
+        private readonly Size standardLabelSize = new Size(85, 18);
         private readonly Size standardInputSize = new Size(100, 18);
         private const int pxInternalPadding = 10;
         private const int pyInternalPadding = 8;
@@ -126,15 +128,19 @@ namespace Mandelbrot
         }
         #endregion
 
-        public InputSection(ICollection<string> colourSchemes)
+        public InputSection()
         {
-            this.validSchemeNames = colourSchemes;
             this.inputs = new Dictionary<inputNames, Tuple<Control, Control>>();
             InitializeComponent();
         }
 
         private void InitializeComponent()
         {
+            this.colours = new Dictionary<string, ColourPalette>();
+            this.colours["Default"] = new ColourPalette(Color.White, Color.Red, Color.Green, Color.Blue);
+            this.colours["Forest"] = new ColourPalette(Color.MidnightBlue, Color.ForestGreen, Color.FloralWhite, Color.Gray);
+            this.colours["Awful"] = new ColourPalette(Color.Chocolate, Color.Lime, Color.PeachPuff, Color.Purple);
+
             int tabindex = 0;
 
             // Using braces to limit scope.
@@ -209,13 +215,19 @@ namespace Mandelbrot
                 templabel.TextAlign = ContentAlignment.MiddleRight;
 
                 tempbox.Size = standardInputSize;
-                tempbox.Items.AddRange(validSchemeNames.ToArray());
+                tempbox.Items.AddRange(this.colours.Keys.ToArray());
                 tempbox.Text = "Default";
                 tempbox.SelectedItem = "Default";
+                this.CurrentPalette = this.colours["Default"];
+                tempbox.SelectedValueChanged += (object o, EventArgs e) =>
+                {
+                    this.CurrentPalette = this.colours[this.colourSchemeName];
+                    this.ownColourBox.Checked = false;
+                };
                 tempbox.TabIndex = tabindex++;
             }
 
-            {   // own colour cbox
+            {   // own colour box
                 CheckBox tempcbox = new CheckBox();
                 ColourChoice tempchoice = new ColourChoice();
                 inputs[inputNames.ownColour] = new Tuple<Control, Control>(tempcbox, tempchoice);
@@ -227,7 +239,20 @@ namespace Mandelbrot
                 tempcbox.TextAlign = ContentAlignment.MiddleRight;
                 tempcbox.TabIndex = tabindex++;
 
+                tempcbox.CheckedChanged += (object o, EventArgs e) =>
+                {
+                    if (tempcbox.Checked)
+                        this.CurrentPalette = tempchoice.Palette;
+                    else
+                        this.CurrentPalette = this.colours[this.colourSchemeName];
+                };
+
                 tempchoice.Size = standardInputSize;
+                tempchoice.ColourChanged += (object o, EventArgs e) =>
+                {
+                    tempcbox.Checked = true;
+                    this.CurrentPalette = tempchoice.Palette;
+                };
                 tempchoice.TabIndex = tabindex++;
             }
 

@@ -16,6 +16,18 @@ namespace Mandelbrot
         private int pxPadding = 6;
         #endregion
 
+        #region events
+        public event EventHandler ColourChanged;
+        #endregion
+
+        public ColourPalette Palette
+        {
+            get
+            {
+                return new ColourPalette(boxes[0].Colour, boxes[1].Colour, boxes[2].Colour, boxes[3].Colour);
+            }
+        }
+
         public ColourChoice()
         {
             Color[] initialcolours = {Color.White, Color.Blue, Color.Red, Color.Black };
@@ -24,12 +36,18 @@ namespace Mandelbrot
             {
                 ColourBox cbox = new ColourBox(initialcolours[i]);
 
-                // Position will be done later
+                // Position will be done by the resize method
+
+                cbox.ColourChanged += (object o, EventArgs e) =>
+                {
+                    if (this.ColourChanged != null)
+                        this.ColourChanged(this, EventArgs.Empty);
+                };
 
                 this.boxes.Add(cbox);
                 this.Controls.Add(cbox);
             }
-            this.handleResize(this, EventArgs.Empty);
+            this.Resize += this.handleResize;
         }
 
         private void handleResize(object o, EventArgs e)

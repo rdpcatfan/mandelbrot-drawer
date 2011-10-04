@@ -62,6 +62,7 @@ namespace Mandelbrot
         public ColourMixer(Color c)
         {
             InitializeComponents();
+            this.MixedColour = c;
         }
 
         private void InitializeComponents()
