@@ -36,7 +36,7 @@ namespace Mandelbrot
         }
         #endregion
 
-        #region events
+        #region event handlers
         /// <summary>
         /// beginResize is fired in response to the ResizeBegin event of the main form.
         /// ResizeBegin fires once when the border of the form is dragged. 
