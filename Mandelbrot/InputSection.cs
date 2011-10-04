@@ -231,6 +231,7 @@ namespace Mandelbrot
                 {
                     this.CurrentPalette = this.colours[this.colourSchemeName];
                     this.ownColourBox.Checked = false;
+                    this.Invalidate();
                 };
                 tempbox.TabIndex = tabindex++;
             }
