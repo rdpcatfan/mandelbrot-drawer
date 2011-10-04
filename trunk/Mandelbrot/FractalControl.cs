@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace Mandelbrot
@@ -46,6 +47,11 @@ namespace Mandelbrot
         /// Holds the current mouse position in an image drag operation.
         /// </summary>
         Point mouseDownPosition, dragPosition;
+
+        /// <summary>
+        /// True when the image is being generated.
+        /// </summary>
+        private bool generating = false;
         #endregion
 
         #region properties
@@ -110,7 +116,7 @@ namespace Mandelbrot
             this.generateImageButton.Text = "Start";
             this.generateImageButton.Location = new Point(0, this.input.Size.Height + pyInternalPadding);
             this.generateImageButton.Size = new Size(this.Size.Width, pyButtonSize);
-            this.generateImageButton.Click += this.generateFractal;
+            this.generateImageButton.Click += this.requestGenerateFractal;
             this.AcceptButton = this.generateImageButton;
 
             // mandelImageContainer
@@ -122,8 +128,9 @@ namespace Mandelbrot
             this.mandelImageContainer.MouseMove += this.dragImage;
             this.mandelImageContainer.MouseUp += this.dragImageEnd;
             this.mandelImageContainer.MouseWheel += this.setImageZoom;
+            this.mandelImageContainer.Image = new Bitmap(1, 1); // Temporary image to avoid race condition.
 
-            this.input.Invalidated += this.generateFractal;
+            this.input.Invalidated += this.requestGenerateFractal;
             this.Resize += this.sizeChanged;
 
             this.Controls.Add(this.input);
@@ -133,11 +140,6 @@ namespace Mandelbrot
         }
         #endregion
 
-        #region event handlers
-        /// <summary>
-        /// Resets the image to the default starting position, scale and iterations.
-        /// </summary>
-
         /// <summary>
         /// Generate and render the fractalGenerator.
         /// </summary>
@@ -146,7 +148,23 @@ namespace Mandelbrot
         /// the time taken.  Whether this is good design is questionable,
         /// but it is not significant enough of an issue to redesign.
         /// </remarks>
-        private void generateFractal(object o = null, EventArgs e = null)
+        private void requestGenerateFractal(object o = null, EventArgs e = null)
+        {
+            if (generating)
+                return; // Don't do anything if we're already busy.
+            generating = true;
+            try
+            {
+                Thread worker = new Thread(new ThreadStart(generateFractal));
+                worker.Start();
+            }
+            finally
+            {
+                generating = false;
+            }
+        }
+
+        private void generateFractal()
         {
             DateTime start = DateTime.Now;  // Poor man's timer
             try
@@ -204,6 +222,7 @@ namespace Mandelbrot
             }
         }
 
+        #region event handlers
         /// <summary>
         /// Return the image to the original position.
         /// </summary>
@@ -216,7 +235,7 @@ namespace Mandelbrot
             this.input.ryCentre = 0.0;
             this.input.rScale = 0.01;
             this.input.iMax = 500;
-            this.generateFractal();
+            this.requestGenerateFractal();
         }
 
         /// <summary>
@@ -241,7 +260,7 @@ namespace Mandelbrot
                 this.input.rScale /= (1 + zoom / 120.0);
             else  // Scroll out, thus increase the rScale.
                 this.input.rScale *= (1 - zoom / 120.0);
-            this.generateFractal();
+            this.requestGenerateFractal();
         }
 
         /// <summary>
@@ -266,7 +285,7 @@ namespace Mandelbrot
                 this.input.rxCentre += (dragPosition.X - e.X) * rScale;
                 this.input.ryCentre -= (dragPosition.Y - e.Y) * rScale;
                 dragPosition = new Point(e.X, e.Y);
-                this.generateFractal();
+                this.requestGenerateFractal();
             }
         }
 
@@ -292,7 +311,7 @@ namespace Mandelbrot
                  */
                 this.input.rxCentre += (e.X - mandelImageContainer.Size.Width / 2) * rScale;
                 this.input.ryCentre -= (e.Y - mandelImageContainer.Size.Height / 2) * rScale;
-                this.generateFractal();
+                this.requestGenerateFractal();
             }
         }
 
@@ -307,7 +326,7 @@ namespace Mandelbrot
             this.generateImageButton.Size = new Size(this.ClientSize.Width, pyButtonSize);
             this.mandelImageContainer.Location = new Point(0, this.generateImageButton.Location.Y + pyButtonSize + pyInternalPadding);
             this.mandelImageContainer.Size = new Size(this.ClientSize.Width, this.ClientSize.Height - this.input.Size.Height - pyButtonSize - pyInternalPadding * 2);
-            this.generateFractal();
+            this.requestGenerateFractal();
         }
         #endregion
     }
