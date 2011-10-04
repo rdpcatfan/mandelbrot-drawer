@@ -19,8 +19,8 @@ namespace Mandelbrot
         private IDictionary<BaseColour, NumericUpDown> counters;
         private PictureBox preview;
 
-        private readonly Size labelSize = new Size(30, 15);
-        private readonly Size counterSize = new Size(20, 15);
+        private readonly Size labelSize = new Size(40, 18);
+        private readonly Size counterSize = new Size(60, 18);
         private const int pxExternalPadding = 6;
         private const int pyExternalPadding = 6;
         private const int pxInternalPadding = 10;
@@ -44,7 +44,7 @@ namespace Mandelbrot
         {
             get
             {
-                return Color.FromArgb(this[BaseColour.red] << 16 | this[BaseColour.green] << 8 | this[BaseColour.blue]);
+                return Color.FromArgb(this[BaseColour.red], this[BaseColour.green], this[BaseColour.blue]);
             }
             set
             {
@@ -88,23 +88,34 @@ namespace Mandelbrot
                 NumericUpDown tempCounter = new NumericUpDown();
                 tempCounter.Location = new Point(pxCounterBegin, currentHeight);
                 tempCounter.Size = counterSize;
-                tempCounter.Value = 0xFF;
                 tempCounter.Minimum = 0;
                 tempCounter.Maximum = 0xFF;
                 tempCounter.ValueChanged += (object o, EventArgs e) =>
                 {
                     if (ColourChanged != null)
                         ColourChanged(this, EventArgs.Empty);
+                    preview.Invalidate();
                 };
                 this.counters[b] = tempCounter;
+                tempCounter.Value = this[b];
                 this.Controls.Add(tempCounter);
+
+                currentHeight += pyStep;
             }
 
             preview = new PictureBox();
             preview.Location = new Point(pxCounterBegin + counterSize.Width + pxInternalPadding, pyExternalPadding);
-            preview.Size = new Size(3 * pyStep, 3 * pyStep); // A square box
-            Graphics gr = preview.CreateGraphics();
-            gr.FillRectangle(Brushes.White, preview.ClientRectangle);
+            preview.Size = new Size(3 * pyStep - pxInternalPadding, 3 * pyStep - pyInternalPadding); // A square box
+            preview.Paint += (object o, PaintEventArgs pea) =>
+            {
+                using (Brush br = new SolidBrush(this.MixedColour))
+                {
+                    pea.Graphics.FillRectangle(br, this.preview.ClientRectangle);
+                };
+            };
+
+            this.Size = new Size(pxCounterBegin + counterSize.Width + pxInternalPadding + 3 * pyStep + 2 * pxExternalPadding, currentHeight + pyStep + 2 * pyExternalPadding);
+            this.Text = "Kleur Kiezer";
             this.Controls.Add(preview);
         }
     }
