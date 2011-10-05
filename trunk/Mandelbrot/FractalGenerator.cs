@@ -128,8 +128,8 @@ namespace Mandelbrot
         /// </exception>
         public Image generate(ImageInfo info)
         {
-            if (!this.busy.WaitOne(0))
-                throw new Exception("Ridiculous internal error.");
+            if (!this.busy.WaitOne(0)) // This should never, ever happen in this project, but let's be safe.
+                throw new Exception("Request for image generation while already busy.");
             Bitmap newImage = new Bitmap(info.pxSize, info.pySize, PixelFormat.Format32bppRgb);
             BitmapData bmd = newImage.LockBits(
                 new Rectangle(0, 0, info.pxSize, info.pySize),
