@@ -175,6 +175,11 @@ namespace Mandelbrot
             DateTime start = DateTime.Now;  // Poor man's timer
             try
             {
+                /* When an exception is encountered, the colours in the current image will be transformed 
+                 * to black and white and an error message appears on the image. 
+                 * The conversion from colour to black and white is done with a colour matrix,
+                 * which provides a fast and simple way to change to colours of a complete image.
+                 */
                 this.mandelImageContainer.Image = fractalGenerator.generate(
                     new ImageInfo(this.mandelImageContainer.Width,
                     this.mandelImageContainer.Height,
@@ -193,6 +198,7 @@ namespace Mandelbrot
                 Image image = this.mandelImageContainer.Image;
                 Graphics gr = this.mandelImageContainer.CreateGraphics();
 
+                //All the colours will become a dark gray, the precise colour depends on the lightness of the original colour.
                 float[][] colorMatrixElements = {   new float[]{0.1f, 0.1f, 0.1f,  0,  0},
                                                     new float[]{0.1f, 0.1f, 0.1f,  0,  0},
                                                     new float[]{0.1f, 0.1f, 0.1f,  0,  0},
@@ -206,6 +212,7 @@ namespace Mandelbrot
                 Rectangle containerSize = this.mandelImageContainer.ClientRectangle;
                 Rectangle imageSize = new Rectangle(new Point((containerSize.Width - image.Width) / 2, (containerSize.Height - image.Height) / 2), image.Size);
 
+                //Drawing the black and white image in the mandelImageContainer
                 gr.DrawImage(image,
                    imageSize,
                    0, 0,
@@ -214,6 +221,7 @@ namespace Mandelbrot
                    GraphicsUnit.Pixel,
                    imageAttributes);
 
+                //Drawing the actual exception message
                 string errorText = "Er is een probleem opgetreden:\r\n\r\n" + exc.Message;
                 gr.DrawString(errorText, new Font("Arial", 16), Brushes.White, containerSize.Width / 2 - 160, containerSize.Height / 2 - 40);
             }
