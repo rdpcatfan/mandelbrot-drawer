@@ -88,7 +88,15 @@ namespace Mandelbrot
         {
             get
             {
-                return Int32.Parse(maxIterationsBox.Text);
+                try
+                {
+                    return Int32.Parse(maxIterationsBox.Text);
+                }
+                catch
+                {
+                    maxIterationsBox.Invoke((Action)(() => maxIterationsBox.Text = "500"));
+                    return 500;
+                }
             }
             set
             {
@@ -116,7 +124,13 @@ namespace Mandelbrot
         {
             get
             {
-                return (string)colourChoiceBox.SelectedItem;
+                if (colourChoiceBox.SelectedItem != null && colours.ContainsKey((string)colourChoiceBox.SelectedItem))
+                    return (string)colourChoiceBox.SelectedItem;
+                else
+                {
+                    colourChoiceBox.Invoke((Action)(() => colourChoiceBox.SelectedItem = colours.Keys.First()));
+                    return colours.Keys.First();
+                }
             }
             set
             {

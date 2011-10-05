@@ -53,41 +53,10 @@ namespace Mandelbrot
         /// </summary>
         private Semaphore generating;
 
-        /// <summary>
-        /// Locks when the image sizes are being accessed.
-        /// </summary>
-        private Semaphore imageSizeLock;
+        private Semaphore waiting;
         #endregion
 
         #region properties
-        /// <summary>
-        /// Horizontal size of the image.
-        /// </summary>
-        public int pxImage
-        {
-            get
-            {
-                this.imageSizeLock.WaitOne(-1);
-                int temp = mandelImageContainer.Image.Width;
-                this.imageSizeLock.Release();
-                return temp;
-            }
-        }
-
-        /// <summary>
-        /// Vertical size of the image.
-        /// </summary>
-        public int pyImage
-        {
-            get
-            {
-                this.imageSizeLock.WaitOne(-1);
-                int temp = mandelImageContainer.Image.Height;
-                this.imageSizeLock.Release();
-                return temp;
-            }
-        }
-
         /// <summary>
         /// Duration it took to generate the last image.
         /// </summary>
@@ -107,6 +76,14 @@ namespace Mandelbrot
                 mandelImageContainer.Image = value;
             }
         }
+
+        public Size ContainerSize
+        {
+            get
+            {
+                return this.mandelImageContainer.Size;
+            }
+        }
         #endregion
 
         #region events
@@ -120,7 +97,7 @@ namespace Mandelbrot
         public FractalControl()
         {
             this.generating = new Semaphore(1, 1);
-            this.imageSizeLock = new Semaphore(1, 1);
+            this.waiting = new Semaphore(1, 1);
             this.fractalGenerator = new MandelbrotGenerator();
             this.InitializeComponents();
         }
@@ -133,6 +110,7 @@ namespace Mandelbrot
         /// </remarks>
         private void InitializeComponents()
         {
+            this.generating.WaitOne(); // We don't want anything to generate yet, so let's say we're busy.
             this.input = new InputSection();
             this.generateImageButton = new Button();
             this.mandelImageContainer = new PictureBox();
@@ -166,6 +144,7 @@ namespace Mandelbrot
             this.Controls.Add(this.generateImageButton);
             this.Controls.Add(this.mandelImageContainer);
             this.MinimumSize = new Size(this.input.MinimumWidth, this.input.MinimumHeight + pyButtonSize + 2 * pyInternalPadding + 100);
+            this.generating.Release(); // Can generate now
         }
         #endregion
 
@@ -176,6 +155,19 @@ namespace Mandelbrot
         /// </summary>
         private void generateFractal()
         {
+            if (!waiting.WaitOne(0)) // If there's already a thread waiting, just give up.
+                return;
+            generating.WaitOne(-1); // Wait until free.
+            waiting.Release();
+            ImageInfo toGenerate = new ImageInfo(
+                this.mandelImageContainer.Width,
+                this.mandelImageContainer.Height,
+                this.input.rxCentre,
+                this.input.ryCentre,
+                this.input.rScale,
+                this.input.iMax,
+                this.input.CurrentPalette
+            );
             DateTime start = DateTime.Now;  // Poor man's timer
             try
             {
@@ -184,17 +176,7 @@ namespace Mandelbrot
                  * The conversion from colour to black and white is done with a colour matrix,
                  * which provides a fast and simple way to change to colours of a complete image.
                  */
-                this.mandelImageContainer.Image = fractalGenerator.generate(
-                    new ImageInfo(this.mandelImageContainer.Width,
-                    this.mandelImageContainer.Height,
-                    this.input.rxCentre,
-                    this.input.ryCentre,
-                    this.input.rScale,
-                    this.input.iMax,
-                    this.input.CurrentPalette)
-                );
-                if (FinishedDrawing != null)
-                    FinishedDrawing(this, EventArgs.Empty);
+                this.mandelImageContainer.Image = fractalGenerator.generate(toGenerate);
             }
             catch (Exception exc)
             {
@@ -203,7 +185,7 @@ namespace Mandelbrot
                 Graphics gr = this.mandelImageContainer.CreateGraphics();
 
                 //All the colours will become a dark gray, the precise colour depends on the lightness of the original colour.
-                float[][] colourMatrixElements = {   new float[]{0.1f, 0.1f, 0.1f,  0,  0},
+                float[][] colourMatrixElements = {  new float[]{0.1f, 0.1f, 0.1f,  0,  0},
                                                     new float[]{0.1f, 0.1f, 0.1f,  0,  0},
                                                     new float[]{0.1f, 0.1f, 0.1f,  0,  0},
                                                     new float[]{  0 ,   0 ,   0 ,  1,  0},
@@ -215,8 +197,8 @@ namespace Mandelbrot
 
                 Rectangle containerSize = this.mandelImageContainer.ClientRectangle;
                 Rectangle imageSize = new Rectangle(
-                    new Point((containerSize.Width - this.pxImage) / 2, (containerSize.Height - this.pyImage) / 2),
-                    new Size(this.pxImage, this.pyImage)
+                    new Point((containerSize.Width - image.Width) / 2, (containerSize.Height - image.Height) / 2),
+                    image.Size
                 );
 
                 //Drawing the black and white image in the mandelImageContainer
@@ -242,6 +224,9 @@ namespace Mandelbrot
                 // should be some way to nail it to two decimals, or something
                 // around that.
                 this.GenerationTime = DateTime.Now - start;
+                this.generating.Release();
+                if (FinishedDrawing != null)
+                    FinishedDrawing(this, EventArgs.Empty);
             }
         }
         #endregion
@@ -257,17 +242,8 @@ namespace Mandelbrot
         /// </remarks>
         private void requestGenerateFractal(object o = null, EventArgs e = null)
         {
-            if (!generating.WaitOne(0))
-                return; // Don't do anything if we're already busy.
-            try
-            {
-                Thread worker = new Thread(new ThreadStart(generateFractal));
-                worker.Start();
-            }
-            finally
-            {
-                generating.Release();
-            }
+            Thread worker = new Thread(new ThreadStart(generateFractal));
+            worker.Start();
         }
 
         /// <summary>
@@ -292,16 +268,7 @@ namespace Mandelbrot
         /// </summary>
         private void setImageFocus(object sender, EventArgs e)
         {
-            if (!generating.WaitOne(0)) // Don't want to interfere.
-                return;
-            try
-            {
-                this.mandelImageContainer.Focus();
-            }
-            finally
-            {
-                generating.Release();
-            }
+            this.mandelImageContainer.Focus();
         }
 
         /// <summary>
