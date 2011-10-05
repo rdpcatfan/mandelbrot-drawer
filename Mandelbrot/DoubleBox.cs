@@ -21,10 +21,10 @@ namespace Mandelbrot
                         return Double.Parse(base.Text.Replace(',', '.'), new CultureInfo("en-US").NumberFormat);
                     return 0.01;
                 }
-                catch(Exception exc)
+                catch
                 {
-                    base.Text = (0.01).ToString();
-                    throw;
+                    base.Invoke((Action)(() => base.Text = (0.01).ToString()));
+                    return 0.01;
                 }
             }
             set

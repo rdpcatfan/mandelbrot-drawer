@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Mandelbrot
@@ -85,6 +86,13 @@ namespace Mandelbrot
         /// The last image fully generated.
         /// </summary>
         private Bitmap lastImage;
+
+        /// <summary>
+        /// Ensures nobody ever uses this class from two threads at once.
+        /// 
+        /// *NOBODY*
+        /// </summary>
+        private Semaphore busy;
         #endregion
 
         #region constructors
@@ -96,6 +104,7 @@ namespace Mandelbrot
         public FractalGenerator()
         {
             this.oldInfo = new ImageInfo();
+            this.busy = new Semaphore(1, 1);
         }
         #endregion
 
@@ -119,35 +128,43 @@ namespace Mandelbrot
         /// </exception>
         public Image generate(ImageInfo info)
         {
+            if (!this.busy.WaitOne(0))
+                throw new Exception("Ridiculous internal error.");
             Bitmap newImage = new Bitmap(info.pxSize, info.pySize, PixelFormat.Format32bppRgb);
             BitmapData bmd = newImage.LockBits(
                 new Rectangle(0, 0, info.pxSize, info.pySize),
                 ImageLockMode.WriteOnly,
                 newImage.PixelFormat
             );
-
-            if (info.rScale < 1E-15) // Precision error
-                throw new Exception("Limiet schaal overschreden");
-
-            if (info.iMax < 1)
-                throw new Exception("Aantal iteraties moet positief zijn");
-            
-            IList<PartInfo> parts;
-            
-            if (ImageCombination.CombinationPossible(this.oldInfo, info))
+            try
             {
-                ImageCombination combination = new ImageCombination(oldInfo, info); // Hm, I'd usually use var here.
-                this.moveImage(bmd, combination);
-                parts = this.makePartsFromWhole(info, combination.OverlapInSecond, bmd.Scan0);
+                if (info.rScale < 1E-15) // Precision error
+                    throw new Exception("Limiet schaal overschreden");
+
+                if (info.iMax < 1)
+                    throw new Exception("Aantal iteraties moet positief zijn");
+            
+                IList<PartInfo> parts;
+            
+                if (ImageCombination.CombinationPossible(this.oldInfo, info))
+                {
+                    ImageCombination combination = new ImageCombination(oldInfo, info); // Hm, I'd usually use var here.
+                    this.moveImage(bmd, combination);
+                    parts = this.makePartsFromWhole(info, combination.OverlapInSecond, bmd.Scan0);
+                }
+                else
+                {
+                    parts = this.makePartsFromWhole(info, FractalGenerator.AbsentIgnoredArea, bmd.Scan0);
+                }
+                Parallel.ForEach(parts, generatePart);
             }
-            else
+            finally
             {
-                parts = this.makePartsFromWhole(info, FractalGenerator.AbsentIgnoredArea, bmd.Scan0);
+                newImage.UnlockBits(bmd);
+                this.oldInfo = info;
+                this.lastImage = newImage;
+                this.busy.Release();
             }
-            Parallel.ForEach(parts, generatePart);
-            newImage.UnlockBits(bmd);
-            this.oldInfo = info;
-            this.lastImage = newImage;
             return newImage;
         }
         #endregion
