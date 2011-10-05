@@ -128,7 +128,7 @@ namespace Mandelbrot
         /// </summary>
         private void updateStatusBar(object sender, EventArgs e)
         {
-            statusStripSizeLabel.Text = "Afmetingen: " + this.fractal.Image.Width + " x " + this.fractal.Image.Height;
+            statusStripSizeLabel.Text = "Afmetingen: " + this.fractal.pxImage + " x " + this.fractal.pyImage;
             this.statusStripTimeLabel.Text = "Gegenereerd in: " + this.fractal.GenerationTime.TotalMilliseconds.ToString("0") + " ms";
         }
         #endregion
