@@ -48,7 +48,7 @@ namespace Mandelbrot
             //
             // fractal
             //
-            this.fractal.Paint += this.updateStatusBar;
+            this.fractal.FinishedDrawing += this.updateStatusBar;
             this.fractal.Location = new Point(pxPadding, 25);
             this.fractal.Size = this.calcFractalSize();
             //

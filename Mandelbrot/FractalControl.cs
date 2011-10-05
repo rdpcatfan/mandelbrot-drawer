@@ -49,21 +49,44 @@ namespace Mandelbrot
         Point mouseDownPosition, dragPosition;
 
         /// <summary>
-        /// True when the image is being generated.
+        /// Locks when the image is being generated
         /// </summary>
-        private bool generating = false;
+        private Semaphore generating;
+
+        /// <summary>
+        /// Locks when the image sizes are being accessed.
+        /// </summary>
+        private Semaphore imageSizeLock;
         #endregion
 
         #region properties
         /// <summary>
         /// Horizontal size of the image.
         /// </summary>
-        public int pxImage { get; private set; }
+        public int pxImage
+        {
+            get
+            {
+                this.imageSizeLock.WaitOne();
+                int temp = mandelImageContainer.Image.Width;
+                this.imageSizeLock.Release();
+                return temp;
+            }
+        }
 
         /// <summary>
         /// Vertical size of the image.
         /// </summary>
-        public int pyImage { get; private set; }
+        public int pyImage
+        {
+            get
+            {
+                this.imageSizeLock.WaitOne();
+                int temp = mandelImageContainer.Image.Width;
+                this.imageSizeLock.Release();
+                return temp;
+            }
+        }
 
         /// <summary>
         /// Duration it took to generate the last image.
@@ -86,12 +109,18 @@ namespace Mandelbrot
         }
         #endregion
 
+        #region events
+        public event EventHandler FinishedDrawing;
+        #endregion
+
         #region constructors
         /// <summary>
         /// Construct and initialise a fractal control.
         /// </summary>
         public FractalControl()
         {
+            this.generating = new Semaphore(1, 1);
+            this.imageSizeLock = new Semaphore(1, 1);
             this.fractalGenerator = new MandelbrotGenerator();
             this.InitializeComponents();
         }
@@ -140,29 +169,6 @@ namespace Mandelbrot
         }
         #endregion
 
-        /// <summary>
-        /// Generate and render the fractalGenerator.
-        /// </summary>
-        /// <remarks>
-        /// At the moment, this also times the process and displays
-        /// the time taken.  Whether this is good design is questionable,
-        /// but it is not significant enough of an issue to redesign.
-        /// </remarks>
-        private void requestGenerateFractal(object o = null, EventArgs e = null)
-        {
-            if (generating)
-                return; // Don't do anything if we're already busy.
-            generating = true;
-            try
-            {
-                Thread worker = new Thread(new ThreadStart(generateFractal));
-                worker.Start();
-            }
-            finally
-            {
-                generating = false;
-            }
-        }
 
         private void generateFractal()
         {
@@ -178,6 +184,8 @@ namespace Mandelbrot
                     this.input.iMax,
                     this.input.CurrentPalette)
                 );
+                if (FinishedDrawing != null)
+                    FinishedDrawing(this, EventArgs.Empty);
             }
             catch (Exception exc)
             {
@@ -224,6 +232,29 @@ namespace Mandelbrot
 
         #region event handlers
         /// <summary>
+        /// Generate and render the fractalGenerator.
+        /// </summary>
+        /// <remarks>
+        /// At the moment, this also times the process and displays
+        /// the time taken.  Whether this is good design is questionable,
+        /// but it is not significant enough of an issue to redesign.
+        /// </remarks>
+        private void requestGenerateFractal(object o = null, EventArgs e = null)
+        {
+            if (!generating.WaitOne(0))
+                return; // Don't do anything if we're already busy.
+            try
+            {
+                Thread worker = new Thread(new ThreadStart(generateFractal));
+                worker.Start();
+            }
+            finally
+            {
+                generating.Release();
+            }
+        }
+
+        /// <summary>
         /// Return the image to the original position.
         /// </summary>
         /// <remarks>
@@ -245,7 +276,16 @@ namespace Mandelbrot
         /// </summary>
         private void setImageFocus(object sender, EventArgs e)
         {
-            this.mandelImageContainer.Focus();
+            if (!generating.WaitOne(0)) // Don't want to interfere.
+                return;
+            try
+            {
+                this.mandelImageContainer.Focus();
+            }
+            finally
+            {
+                generating.Release();
+            }
         }
 
         /// <summary>
