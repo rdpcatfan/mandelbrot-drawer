@@ -67,7 +67,7 @@ namespace Mandelbrot
         {
             get
             {
-                this.imageSizeLock.WaitOne();
+                this.imageSizeLock.WaitOne(-1);
                 int temp = mandelImageContainer.Image.Width;
                 this.imageSizeLock.Release();
                 return temp;
@@ -81,8 +81,8 @@ namespace Mandelbrot
         {
             get
             {
-                this.imageSizeLock.WaitOne();
-                int temp = mandelImageContainer.Image.Width;
+                this.imageSizeLock.WaitOne(-1);
+                int temp = mandelImageContainer.Image.Height;
                 this.imageSizeLock.Release();
                 return temp;
             }
@@ -169,7 +169,11 @@ namespace Mandelbrot
         }
         #endregion
 
-
+        #region private methods
+        /// <summary>
+        /// Method thet generates the fractal.  Should be executed in a
+        /// separate thread, so please do NOT call directly.
+        /// </summary>
         private void generateFractal()
         {
             DateTime start = DateTime.Now;  // Poor man's timer
@@ -199,18 +203,21 @@ namespace Mandelbrot
                 Graphics gr = this.mandelImageContainer.CreateGraphics();
 
                 //All the colours will become a dark gray, the precise colour depends on the lightness of the original colour.
-                float[][] colorMatrixElements = {   new float[]{0.1f, 0.1f, 0.1f,  0,  0},
+                float[][] colourMatrixElements = {   new float[]{0.1f, 0.1f, 0.1f,  0,  0},
                                                     new float[]{0.1f, 0.1f, 0.1f,  0,  0},
                                                     new float[]{0.1f, 0.1f, 0.1f,  0,  0},
                                                     new float[]{  0 ,   0 ,   0 ,  1,  0},
                                                     new float[]{  0 ,   0 ,   0 ,  0,  1}
                                                 };
-                ColorMatrix colorMatrix = new ColorMatrix(colorMatrixElements);
+                ColorMatrix colourMatrix = new ColorMatrix(colourMatrixElements);
 
-                imageAttributes.SetColorMatrix(colorMatrix, ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
+                imageAttributes.SetColorMatrix(colourMatrix, ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
 
                 Rectangle containerSize = this.mandelImageContainer.ClientRectangle;
-                Rectangle imageSize = new Rectangle(new Point((containerSize.Width - image.Width) / 2, (containerSize.Height - image.Height) / 2), image.Size);
+                Rectangle imageSize = new Rectangle(
+                    new Point((containerSize.Width - this.pxImage) / 2, (containerSize.Height - this.pyImage) / 2),
+                    new Size(this.pxImage, this.pyImage)
+                );
 
                 //Drawing the black and white image in the mandelImageContainer
                 gr.DrawImage(image,
@@ -237,6 +244,7 @@ namespace Mandelbrot
                 this.GenerationTime = DateTime.Now - start;
             }
         }
+        #endregion
 
         #region event handlers
         /// <summary>
