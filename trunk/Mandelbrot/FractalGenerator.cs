@@ -259,6 +259,7 @@ namespace Mandelbrot
             double rxCurrent = info.rxStart;
             double ryCurrent = info.ryStart;
             int skippedSpace = info.pxImageSize - info.pxPartSize;
+            // Loop through the pixels and set their colours
             for (int pyCounter = 0; pyCounter < info.pyPartSize; ++pyCounter)
             {
                 for (int pxCounter = 0; pxCounter < info.pxPartSize; ++pxCounter)
@@ -268,7 +269,7 @@ namespace Mandelbrot
                     currentPixel += 1;
                     rxCurrent += info.scale;
                 }
-                currentPixel += skippedSpace;
+                currentPixel += skippedSpace;  // Necessary to get to the beginning of the next line
                 rxCurrent = info.rxStart;
                 ryCurrent -= info.scale;
             }
