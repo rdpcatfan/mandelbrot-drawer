@@ -26,7 +26,7 @@ namespace Mandelbrot
             helpText.Add("Muis", "De Mandelbrot Generator is vrijwel geheel met de muis te bedienen. Klik op een van de onderdelen om te zien op welke wijze u de afbeelding allemaal kunt aanpassen.");
             helpText.Add("Klikken", "Door middel van een enkele klik van de linkermuisknop op de afbeelding centreert u de mandelbrot op dat punt.");
             helpText.Add("Scrollen", "Door vooruit te scrollen met het muiswiel zoomt u in op het huidige middelpunt van de afbeelding, door achteruit te scrollen kunt u weer uitzoomen.\r\n\r\n Let op: Inzoomen voorbij een schaal kleiner dan E-16 is niet mogelijk. Er zal dan de foutmelding 'Limiet schaal overschreden' verschijnen.");
-            helpText.Add("Slepen", "Klik met de linkermuisknop op de afbeelding en houdt deze ingedrukt. Door met de muis te bewegen zal het middelpunt van de afbeelding nu met de richting van de muis mee bewegen.");
+            helpText.Add("Slepen", "Klik met de linkermuisknop op de afbeelding en houdt deze ingedrukt. Door met de muis te bewegen zal het middelpunt van de afbeelding nu met de richting van de muis mee bewegen.  Let op: Bij grotere afbeeldingen of hoge iteraties kan het voorkomen dat het slepen niet vloiend verloopt.");
             helpRichTextBox.SelectionFont = new Font(FontFamily.GenericSansSerif, 16F, FontStyle.Bold);
             helpRichTextBox.SelectionAlignment = HorizontalAlignment.Center;
             helpRichTextBox.SelectedText = "Mandelbrot Generator\r\n\r\n";
