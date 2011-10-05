@@ -148,6 +148,7 @@ namespace Mandelbrot
             this.colours["Awful"] = new ColourPalette(Color.Chocolate, Color.Lime, Color.PeachPuff, Color.Purple);
             this.colours["Death"] = new ColourPalette(Color.Black, Color.GhostWhite, Color.Firebrick, Color.Gray);
             this.colours["Experimental"] = new ColourPalette(Color.Purple, Color.Yellow, Color.Green, Color.Orange);
+            this.colours["Black & White"] = new ColourPalette(Color.White, Color.Black, Color.White, Color.Black);
 
             int tabindex = 0;
 
